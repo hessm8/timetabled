@@ -6,10 +6,12 @@ using System.Windows.Forms;
 namespace Timetabled {
     public class GuiManager {
         Control.ControlCollection controls;
+        Storage storage;
         Point offset => new Point(200, 20);
 
-        public GuiManager(Control.ControlCollection _control) {
+        public GuiManager(Control.ControlCollection _control, Storage _storage) {
             controls = _control;
+            storage = _storage;
         }
 
         public void CreateSchedule() {
@@ -43,7 +45,7 @@ namespace Timetabled {
                     var teacherBox = new ComboBox() {
                         //Name = $"teacherBox{dayIndex + 1}",
                         Location = new Point(0, offset.Y),
-                        Size = comboSize
+                        Size = comboSize,
                     };
 
                     var roomBox = new ComboBox() {
@@ -51,6 +53,18 @@ namespace Timetabled {
                         Location = new Point(0, offset.Y * 2),
                         Size = comboSize
                     };
+
+                    roomBox.Leave += new EventHandler((sender, e) => {
+                        if (roomBox.Text == "") return;
+                        if (!storage.data.rooms.Contains(roomBox.Text)) {
+
+                            var res = MessageBox.Show("Такой аудитории не существует,\nхотите ли вы добавить ее?",
+                                "Ошибка данных", MessageBoxButtons.YesNo);
+                            if (res == DialogResult.Yes) {
+                                storage.data.rooms.Add(roomBox.Text);
+                            } else roomBox.Text = "";
+                        }
+                    });
 
                     lessonPanel.Controls.AddRange(new Control[] {
                         subjectBox, teacherBox, roomBox

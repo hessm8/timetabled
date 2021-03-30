@@ -49,16 +49,13 @@ namespace Timetabled {
 
             LoadItems();
 
-            gui = new GuiManager(Controls);
+            gui = new GuiManager(Controls, storage);
             gui.CreateSchedule();
 
-
-            //Label l = new Label();
-            //l.Location = new Point(100, 100);
-            //l.Text = "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq";
-            //FlowLayoutPanel pan = flowLayoutPanel1.Clone;
-            //Controls.Add(pan);
-            //Debug.Print(storage.data.groups.Last());
+            storage.schedules.Add(DateTime.Now, new Schedule("ПКС-81", 
+                new Schedule.Lesson("Математика", "Янголов", "404"),
+                new Schedule.Lesson("Русский язык", "Каратаев", "205")
+            ));
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
@@ -69,8 +66,6 @@ namespace Timetabled {
             storage.data.subjects.ForEach(i => comboBox1.Items.Add(i));
             storage.data.teachers.ForEach(i => comboBox2.Items.Add(i));
         }
-
-
 
         private void AddDataButton_Click(object sender, EventArgs e) {
             var category = storage.data[SelectData.SelectedItem.ToString()];
@@ -110,16 +105,6 @@ namespace Timetabled {
             } else MessageBox.Show("Данный элемент уже есть в списке", "Ошибка данных");
         }
 
-        private void textBox2_Leave(object sender, EventArgs e) {
-            if (textBox2.Text == "") return;
-            if (!storage.data.rooms.Contains(textBox2.Text)) {
-
-                var res = MessageBox.Show("Такой аудитории не существует,\nхотите ли вы добавить ее?",
-                    "Ошибка данных", MessageBoxButtons.YesNo);
-                if (res == DialogResult.Yes) {
-                    storage.data.rooms.Add(textBox2.Text);
-                } else textBox2.Clear();
-            }
-        }
+        private void textBox2_Leave(object sender, EventArgs e) { }
     }
 }
