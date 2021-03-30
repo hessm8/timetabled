@@ -37,7 +37,7 @@ namespace Timetabled {
             // 
             // AddDataButton
             // 
-            this.AddDataButton.Location = new System.Drawing.Point(12, 138);
+            this.AddDataButton.Location = new System.Drawing.Point(657, 586);
             this.AddDataButton.Name = "AddDataButton";
             this.AddDataButton.Size = new System.Drawing.Size(111, 29);
             this.AddDataButton.TabIndex = 0;
@@ -47,7 +47,7 @@ namespace Timetabled {
             // 
             // AddDataText
             // 
-            this.AddDataText.Location = new System.Drawing.Point(12, 97);
+            this.AddDataText.Location = new System.Drawing.Point(657, 545);
             this.AddDataText.Name = "AddDataText";
             this.AddDataText.Size = new System.Drawing.Size(111, 22);
             this.AddDataText.TabIndex = 5;
@@ -61,7 +61,7 @@ namespace Timetabled {
             "Преподаватель",
             "Группа",
             "Аудитория"});
-            this.SelectData.Location = new System.Drawing.Point(12, 12);
+            this.SelectData.Location = new System.Drawing.Point(657, 460);
             this.SelectData.Name = "SelectData";
             this.SelectData.Size = new System.Drawing.Size(111, 68);
             this.SelectData.TabIndex = 19;
@@ -95,7 +95,7 @@ namespace Timetabled {
             this.flowLayoutPanel1.Controls.Add(this.comboBox1);
             this.flowLayoutPanel1.Controls.Add(this.comboBox2);
             this.flowLayoutPanel1.Controls.Add(this.textBox2);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(206, 97);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(793, 512);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(195, 93);
             this.flowLayoutPanel1.TabIndex = 20;
@@ -103,7 +103,7 @@ namespace Timetabled {
             // Label1
             // 
             this.Label1.AutoSize = true;
-            this.Label1.Location = new System.Drawing.Point(203, 74);
+            this.Label1.Location = new System.Drawing.Point(790, 489);
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(36, 17);
             this.Label1.TabIndex = 21;
@@ -113,7 +113,7 @@ namespace Timetabled {
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1029, 653);
+            this.ClientSize = new System.Drawing.Size(1037, 645);
             this.Controls.Add(this.Label1);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.SelectData);
