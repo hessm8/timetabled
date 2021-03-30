@@ -52,10 +52,19 @@ namespace Timetabled {
             gui = new GuiManager(Controls, storage);
             gui.CreateSchedule();
 
-            storage.schedules.Add(DateTime.Now, new Schedule("ПКС-81", 
-                new Schedule.Lesson("Математика", "Янголов", "404"),
-                new Schedule.Lesson("Русский язык", "Каратаев", "205")
-            ));
+
+            var date = new DateTime(1970, 5, 2);
+
+            storage.schedules.Add(date, new Dictionary<string, Lesson[]>() { 
+                ["ПКС-81"] = new Lesson[] {
+                    new Lesson("Математика", "Монголов", "404"),
+                    new Lesson("Русский язык", "Маратов", "205")
+                },
+                ["Брух-55"] = new Lesson[] {
+                    new Lesson("АКС", "Обама", "111"),
+                    new Lesson("Искусство подтирания", "Крупенко", "222")
+                }
+            });
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
