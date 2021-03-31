@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text.Json;
 using Newtonsoft.Json;
 
 namespace Timetabled {
@@ -58,8 +57,6 @@ namespace Timetabled {
             }
         }
         public void Save() {
-
-
             string serializedData = JsonConvert.SerializeObject(data, serializerSettings);
             File.WriteAllText(DataFilepath, serializedData);
 
@@ -69,7 +66,7 @@ namespace Timetabled {
     }
 
     [Serializable()]
-    public class Lesson : ISerializable{
+    public class Lesson : ISerializable {
         public Lesson(string _subject, string _teacher, string _room) {
             subject = _subject;
             teacher = _teacher;
