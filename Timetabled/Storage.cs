@@ -17,8 +17,8 @@ namespace Timetabled {
                 get {
                     switch (i) {
                         case "Группа": return groups;
-                        case "Преподаватель": return teachers;
                         case "Дисциплина": return subjects;
+                        case "Преподаватель": return teachers;
                         case "Аудитория": return rooms;
                         default: throw new Exception("Invalid data");
                     }
