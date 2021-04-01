@@ -5,33 +5,45 @@ using System.Windows.Forms;
 
 namespace Timetabled {
     public class GuiManager {
-        Control.ControlCollection controls;
-        Storage storage;
+        private Control.ControlCollection controls;
+        private Storage storage;
+        #region Constants & Measurements
 
+        const int fieldCount = 3;
+        const int groupCount = 6;
+        const int maxFields = groupCount * groupCount * fieldCount;
+        private readonly Size fieldSize = new Size(150, 20);
+        private readonly Point scheduleOffset = new Point(100, 150);
+
+        #endregion
         public GuiManager(Control.ControlCollection _control, Storage _storage) {
             controls = _control;
             storage = _storage;
         }
 
-        //Dictionary<string, List<ComboBox>> fields = new Dictionary<string, List<ComboBox>>();
-        //Dictionary<string, List<string>> fields = new Dictionary<string, List<string>>();
+        private List<ComboBox> allFields = new List<ComboBox>(maxFields);
+        public ComboBox AccessField(int day, int lesson, int type) 
+            => allFields[day * lesson * type];
 
+
+        #region Schedule Creation
 
         public void CreateSchedule() {
             controls.AddRange(CreateDayBox());
         }
-
         private Control[] CreateDayBox() {
-            var elements = new Control[6];
+            var elements = new Control[groupCount];
 
-            for (int day = 0; day < 6; day++) {
+            for (int day = 0; day < groupCount; day++) {
                 int distance = 200;
 
                 var dayGroup = new GroupBox() {
                     Name = $"dayGroup{day + 1}",
-                    Text = $"День {day + 1}",
-                    Location = new Point(day * distance + 30, 30),
-                    Size = new Size(192, 475)
+                    Text = dayString[day],
+                    Location = new Point(
+                        day * distance + scheduleOffset.X,
+                        scheduleOffset.Y),
+                    Size = new Size(fieldSize.Width + 42, 465)
                 };
 
                 dayGroup.Controls.AddRange(CreateLessonBox());
@@ -41,16 +53,17 @@ namespace Timetabled {
 
             return elements;
         }
-
         private Control[] CreateLessonBox() {
-            var elements = new Control[6];
+            var elements = new Control[groupCount];
 
-            for (int lesson = 0; lesson < 6; lesson++) {
-                int lessonOffset = lesson * 70;
+            for (int lesson = 0; lesson < groupCount; lesson++) {
+                int lessonOffset = lesson * (fieldSize.Height * fieldCount + 10);
 
                 var lessonPanel = new Panel() {
-                    Location = new Point(20, 30 + lessonOffset),
-                    Size = new Size(152, 63),
+                    Location = new Point(fieldSize.Height, lessonOffset + 30),
+                    Size = new Size( // Thick border around fields, yay
+                        fieldSize.Width + 2,
+                        fieldCount * fieldSize.Height + 3),
                     BorderStyle = BorderStyle.FixedSingle
                 };
                 lessonPanel.Controls.AddRange(CreateLessonFields());
@@ -60,54 +73,18 @@ namespace Timetabled {
 
             return elements;
         }
+        private ComboBox[] CreateLessonFields() {
+            var elements = new ComboBox[fieldCount];
 
-        //private Control[] CreateLessonFields() {
-        //    var subjectBox = new ComboBox() {
-        //        //Name = $"subjectBox({dayIndex + 1}{lessonIndex + 1})",
-        //        Location = new Point(0, 0),
-        //        Size = comboSize
-        //    };
-        //    var teacherBox = new ComboBox() {
-        //        //Name = $"teacherBox({dayIndex + 1}{lessonIndex + 1})",
-        //        Location = new Point(0, offset.Y),
-        //        Size = comboSize,
-        //    };
-        //    var roomBox = new ComboBox() {
-        //        //Name = $"roomBox({dayIndex + 1}{lessonIndex + 1})",
-        //        Location = new Point(0, offset.Y * 2),
-        //        Size = comboSize
-        //    };
-        //    return new Control[] { subjectBox, teacherBox, roomBox };
-        //}
-
-        private enum FieldType {
-            Subject,
-            Teacher,
-            Room
-        }
-
-        private Dictionary<FieldType, string> fieldString => new Dictionary<FieldType, string>() {
-            [FieldType.Subject] = "Дисциплина",
-            [FieldType.Teacher] = "Преподаватель",
-            [FieldType.Room] = "Аудитория"
-        };
-
-        private Control[] CreateLessonFields() {
-            var elements = new Control[3];
-            var comboSize = new Size(150, 20);
-
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < fieldCount; i++) {
                 var field = new ComboBox() {
-                    //Name = $"subjectBox({dayIndex + 1}{lessonIndex + 1})",
-                    Location = new Point(0, comboSize.Height * i),
-                    Size = comboSize,
+                    Location = new Point(0, fieldSize.Height * i),
+                    Size = fieldSize,
                 };
-
                 elements[i] = AssignField(field, (FieldType)i);
             }
             return elements;
         }
-
         private ComboBox AssignField(ComboBox box, FieldType type) {
             var category = fieldString[type];
             var data = storage.data[category];
@@ -125,13 +102,11 @@ namespace Timetabled {
                     } else box.Text = "";
                 }
             });
-
             // Refresh the list on dropdown
             box.DropDown += new EventHandler((sender, e) => {
                 box.Items.Clear();
                 box.Items.AddRange(data.ToArray());
             });
-
             // Autocomplete
             box.KeyDown += new KeyEventHandler((sender, e) => {
                 if (e.KeyCode == Keys.Enter) {
@@ -140,140 +115,34 @@ namespace Timetabled {
                 }
             });
 
+            allFields.Add(box);
             return box;
         }
+
+        #endregion
+
+        #region String Conversions
+
+        private readonly string[] dayString = {
+            "Понедельник",
+            "Вторник",
+            "Среда",
+            "Четверг",
+            "Пятница",
+            "Суббота",
+            "Воскресенье"
+        };
+        private enum FieldType {
+            Subject,
+            Teacher,
+            Room
+        }
+        private Dictionary<FieldType, string> fieldString => new Dictionary<FieldType, string>() {
+            [FieldType.Subject] = "Дисциплина",
+            [FieldType.Teacher] = "Преподаватель",
+            [FieldType.Room] = "Аудитория"
+        };
+
+        #endregion
     }
-
-
-
-
-    //public void CreateSchedule() {
-    //    //fields.Add("Преподаватель", new List<string>());
-    //    //fields.Add("Дисциплина", new List<string>());
-    //    //fields.Add("Аудитория", new List<string>());
-
-    //    //fields.Add("Преподаватель", new List<ComboBox>());
-    //    //fields.Add("Дисциплина", new List<ComboBox>());
-    //    //fields.Add("Аудитория", new List<ComboBox>());
-
-    //    for (int dayIndex = 0; dayIndex < 6; dayIndex++) {
-    //        var pos = new Point(dayIndex * offset.X + 30, 30);
-    //        var size = new Size(192, 475);
-    //        var comboSize = new Size(150, 20);
-
-    //        var dayGroup = new GroupBox() {
-    //            Name = $"dayGroup{dayIndex + 1}",
-    //            Text = $"День {dayIndex + 1}",
-    //            Location = pos,
-    //            Size = size
-    //        };
-
-    //        for (int lessonIndex = 0; lessonIndex < 6; lessonIndex++) {
-    //            int lessonOffset = lessonIndex * 70;
-
-    //            var lessonPanel = new Panel() {
-    //                Location = new Point(20, pos.Y + lessonOffset),
-    //                Size = new Size(152, 63),
-    //                BorderStyle = BorderStyle.FixedSingle                        
-    //            };
-
-    //            var subjectBox = new ComboBox() {
-    //                Name = $"subjectBox({dayIndex + 1}{lessonIndex + 1})",
-    //                Location = new Point(0, 0),
-    //                Size = comboSize
-    //            };
-    //            //fields["Дисциплина"].Add(subjectBox.Name);
-
-    //            var teacherBox = new ComboBox() {
-    //                Name = $"teacherBox({dayIndex + 1}{lessonIndex + 1})",
-    //                Location = new Point(0, offset.Y),
-    //                Size = comboSize,
-    //            };
-    //            //fields["Преподаватель"].Add(subjectBox.Name);
-
-    //            var roomBox = new ComboBox() {
-    //                Name = $"roomBox({dayIndex + 1}{lessonIndex + 1})",
-    //                Location = new Point(0, offset.Y * 2),
-    //                Size = comboSize
-    //            };
-    //            //fields["Аудитория"].Add(subjectBox.Name);
-
-    //            //roomBox.Leave += new EventHandler((sender, e) => {
-
-    //            //    if (roomBox.Text == "") return;
-    //            //    if (!storage.data.rooms.Contains(roomBox.Text)) {
-
-    //            //        var res = MessageBox.Show("Такой аудитории не существует,\nхотите ли вы добавить ее?",
-    //            //            "Ошибка данных", MessageBoxButtons.YesNo);
-    //            //        if (res == DialogResult.Yes) {
-    //            //            storage.data.rooms.Add(roomBox.Text);
-    //            //        } else roomBox.Text = "";
-    //            //    }
-    //            //});               
-
-
-    //            lessonPanel.Controls.AddRange(new Control[] {
-    //                subjectBox, teacherBox, roomBox
-    //            });
-
-    //            dayGroup.Controls.Add(lessonPanel);
-    //        }
-
-    //        controls.Add(dayGroup);
-    //    }
-
-    //    //controls.Find(fields["Аудитория"][0], true)[0].Dispose();
-    //    //controls.Find(fields["Аудитория"][1], true)[0].Dispose();
-
-    //    //controls.Find(fields["Преподаватель"][3], true)[0].Dispose();
-    //    //controls.Find(fields["Преподаватель"][5], true)[0].Dispose();
-    //    //InitFields();
-    //}
-
-    //public void InitFields() {
-    //    foreach (var pair in fields) {
-    //        foreach (var name in pair.Value) {
-    //            var combo = controls.Find(name, true)[0];
-    //            var text = combo.Text;
-
-    //            //controls.RemoveByKey(name);
-
-    //            //controls.Remove(combo);
-
-    //            combo.Leave += new EventHandler((sender, e) => {
-    //                if (text == "") return;
-    //                if (!storage.data[pair.Key].Contains(text)) {
-
-    //                    var res = MessageBox.Show($"Такой записи типа {pair.Key} нет в базе данных.\nДобавить?",
-    //                        "Ошибка данных", MessageBoxButtons.YesNo);
-    //                    if (res == DialogResult.Yes) {
-    //                        storage.data.rooms.Add(text);
-    //                    } else text = "";
-    //                }
-    //            });
-
-    //            //controls.Remove(combo);
-    //        }
-    //    }
-    //}
-
-    //public void InitializeFields() {
-    //    foreach (var pair in fields) {
-    //        foreach (var combo in pair.Value) {
-    //            var text = combo.Text;
-
-    //            combo.Leave += new EventHandler((sender, e) => {
-    //                if (text == "") return;
-    //                if (!storage.data[pair.Key].Contains(text)) {
-
-    //                    var res = MessageBox.Show($"Такой записи типа {pair.Key} нет в базе данных.\nДобавить?",
-    //                        "Ошибка данных", MessageBoxButtons.YesNo);
-    //                    if (res == DialogResult.Yes) {
-    //                        storage.data.rooms.Add(text);
-    //                    } else text = "";
-    //                }
-    //            });
-    //        }
-    //    }
-    //}
 }
