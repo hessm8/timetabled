@@ -115,5 +115,21 @@ namespace Timetabled {
         }
 
         private void textBox2_Leave(object sender, EventArgs e) { }
+
+        private void DisplayScheduleButton_Click(object sender, EventArgs e) {
+
+            string args = "?schedule=" + storage.ScheduleJSON();
+            string fileName = @"viewer.html";
+            //new Process() {
+            //    StartInfo = new ProcessStartInfo() {
+            //        UseShellExecute = true,
+            //        FileName = fileName,
+            //        Arguments = args
+            //    }
+            //}.Start();
+            //Process.Start(GetDefaultBrowserPath(), url);
+
+            //var process = Process.Start(fileName + args);
+        }
     }
 }

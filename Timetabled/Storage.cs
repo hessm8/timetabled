@@ -63,6 +63,15 @@ namespace Timetabled {
             serializedData = JsonConvert.SerializeObject(schedules, serializerSettings);
             File.WriteAllText(SchedulesFilepath, serializedData);
         }
+
+        public string ScheduleJSON() {
+            if (File.Exists(SchedulesFilepath)) {
+                if (new FileInfo(SchedulesFilepath).Length != 0) {
+                    return File.ReadAllText(SchedulesFilepath);
+                }
+            }
+            return null;
+        }
     }
 
     [Serializable()]

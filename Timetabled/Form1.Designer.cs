@@ -32,6 +32,7 @@ namespace Timetabled {
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.Label1 = new System.Windows.Forms.Label();
+            this.DisplayScheduleButton = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -109,11 +110,22 @@ namespace Timetabled {
             this.Label1.TabIndex = 21;
             this.Label1.Text = "DAY";
             // 
+            // DisplayScheduleButton
+            // 
+            this.DisplayScheduleButton.Location = new System.Drawing.Point(760, 683);
+            this.DisplayScheduleButton.Name = "DisplayScheduleButton";
+            this.DisplayScheduleButton.Size = new System.Drawing.Size(127, 46);
+            this.DisplayScheduleButton.TabIndex = 22;
+            this.DisplayScheduleButton.Text = "button1";
+            this.DisplayScheduleButton.UseVisualStyleBackColor = true;
+            this.DisplayScheduleButton.Click += new System.EventHandler(this.DisplayScheduleButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1037, 645);
+            this.ClientSize = new System.Drawing.Size(1037, 802);
+            this.Controls.Add(this.DisplayScheduleButton);
             this.Controls.Add(this.Label1);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.SelectData);
@@ -140,6 +152,7 @@ namespace Timetabled {
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label Label1;
+        private System.Windows.Forms.Button DisplayScheduleButton;
     }
 }
 
