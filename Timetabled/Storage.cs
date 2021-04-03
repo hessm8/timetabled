@@ -81,7 +81,25 @@ namespace Timetabled {
             teacher = _teacher;
             room = _room;
         }
-        readonly string subject, teacher, room;
+        public string this[int i] {
+            get { 
+                switch (i) {
+                    case 0: return subject;
+                    case 1: return teacher;
+                    case 2: return room;
+                    default: return null;
+                }
+            }
+            set {
+                switch (i) {
+                    case 0: subject = value; break;
+                    case 1: teacher = value; break;
+                    case 2: room = value; break;
+                    default: break;
+                }
+            }
+        }
+        public string subject, teacher, room;
 
         //Deserialization
         public Lesson(SerializationInfo info, StreamingContext ctxt) {
