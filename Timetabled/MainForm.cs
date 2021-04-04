@@ -59,5 +59,10 @@ namespace Timetabled {
 
             //var process = Process.Start(fileName + args);
         }
+
+        private void OpenDatabase(object sender, EventArgs e) {
+            var dbManager = new DatabaseManager();
+            dbManager.Show();
+        }
     }
 }
