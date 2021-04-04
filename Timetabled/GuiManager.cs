@@ -35,27 +35,14 @@ namespace Timetabled {
             groupField.Text = storage.data.groups[0];
         }
 
-        private void SelectLatestDate() {
-            storage.schedules.OrderByDescending(k => k.Key);
-            var scheduleKeys = storage.schedules.Keys.ToArray();
-            var date = scheduleKeys.Length == 0 ? DateTime.Now : scheduleKeys[0];
-            calendar.SelectionStart = date.AddDays(7);
-
-            SelectEntireWeek();
-
-            datePrevious = calendar.SelectionStart;
-            dateLatest = calendar.SelectionStart;
-        }
-
-
-
         bool scheduleLoaded = false;
-
         private ComboBox[,,] allFields = new ComboBox[groupCount, groupCount, fieldCount];
 
+        #region Date & Setting Schedule 
 
         DateTime datePrevious;
         DateTime dateLatest;
+
         private void RefreshDates() {
             datePrevious = dateLatest;
             dateLatest = calendar.SelectionStart;
@@ -73,8 +60,20 @@ namespace Timetabled {
 
             calendar.DateChanged += onDateChange;
         }
+        private void SelectLatestDate() {
+            storage.schedules.OrderByDescending(k => k.Key);
+            var scheduleKeys = storage.schedules.Keys.ToArray();
+            var date = scheduleKeys.Length == 0 ? DateTime.Now : scheduleKeys[0];
+            calendar.SelectionStart = date.AddDays(7);
+
+            SelectEntireWeek();
+
+            datePrevious = calendar.SelectionStart;
+            dateLatest = calendar.SelectionStart;
+        }
 
         DateRangeEventHandler onDateChange;
+
         private void OnDateChange(object sender, DateRangeEventArgs e) {
             SelectEntireWeek();
             RefreshDates();
@@ -85,7 +84,6 @@ namespace Timetabled {
                 LoadSchedule(dateLatest, group);
             }
         }
-
         private void SaveSchedule(DateTime date, string group) {
             var classes = storage.schedules;
             for (int dayIndex = 0; dayIndex < groupCount; dayIndex++) {
@@ -118,7 +116,6 @@ namespace Timetabled {
                 else classes[curDate] = groupLessons;
             }
         }
-
         public void LoadSchedule(DateTime date, string group) {
             var classes = storage.schedules;
             for (int day = 0; day < groupCount; day++) {
@@ -142,6 +139,8 @@ namespace Timetabled {
                 }
             }
         }
+
+        #endregion
 
         #region Schedule Creation
 
