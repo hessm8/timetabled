@@ -4,6 +4,7 @@ using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Timetabled {
     public class GuiManager {
@@ -25,16 +26,12 @@ namespace Timetabled {
             calendar = (MonthCalendar)controls.Find("SelectDate", false)[0];
             groupField = (ComboBox)controls.Find("groupSelect", false)[0];
 
-            SelectLatestDate(); // Hidden hacky solution to the unknown bug
+            SelectLatestDate(); // Hidden hacky solution to a bug
 
             onDateChange = (sender, e) => OnDateChange(sender, e);
             calendar.DateChanged += onDateChange;
 
-            groupField.DropDown += new EventHandler((sender, e) => {
-                groupField.Items.Clear();
-                groupField.Items.AddRange(storage.data.groups.ToArray());
-            });
-
+            AssignField(ref groupField, FieldType.Group);
             groupField.Text = storage.data.groups[0];
         }
 
@@ -198,23 +195,30 @@ namespace Timetabled {
         private ComboBox[] CreateLessonFields(int day, int lesson) {
             var elements = new ComboBox[fieldCount];
 
-            for (int i = 0; i < fieldCount; i++) {
+            for (int type = 0; type < fieldCount; type++) {
                 var field = new ComboBox() {
-                    Location = new Point(0, fieldSize.Height * i),
+                    Location = new Point(0, fieldSize.Height * type),
                     Size = fieldSize,
                 };
-                elements[i] = AssignField(field, (FieldType)i);
-                allFields[day, lesson, i] = elements[i];
+                AssignField(ref field, (FieldType)type, (day, lesson, type));
+                elements[type] = field;
+                allFields[day, lesson, type] = field;
             }
             return elements;
         }
-        private ComboBox AssignField(ComboBox box, FieldType type) {
+        private void AssignField(ref ComboBox field, FieldType type,
+            (int day, int lesson, int type) pos = default) {
             var category = fieldString[type];
             var data = storage.data[category];
+            var box = field;
 
-            // Database check
+            // Database and text field check on leave
             box.Leave += new EventHandler((sender, e) => {
+                // Skip if empty
                 if (box.Text == "") return;
+                // Leave only Russian and special characters
+                box.Text = Regex.Replace(box.Text, @"[^-.ЁёА-Яа-я0-9\s]", "");
+                // Ask to add if item is not in database
                 if (!data.Contains(box.Text)) {
                     var popupResult = MessageBox.Show(
                         $"Элемента нет в списке [{category}],\nДобавить его в базу данных?",
@@ -230,15 +234,31 @@ namespace Timetabled {
                 box.Items.Clear();
                 box.Items.AddRange(data.ToArray());
             });
-            // Autocomplete
-            box.KeyDown += new KeyEventHandler((sender, e) => {
-                if (e.KeyCode == Keys.Enter) {
-                    box.Text = data.Find(t => t.ToLower()
-                    .Contains(box.Text.ToLower())) ?? box.Text;
+            // Key binds
+            box.KeyDown += new KeyEventHandler((sender, e) => {      
+                switch (e.KeyCode) {
+                    // Autocomplete
+                    case Keys.Enter:
+                        if (!e.Alt) {
+                            // Based on input
+                            box.Text = data.Find(t => t.ToLower()
+                            .Contains(box.Text.ToLower())) ?? box.Text;
+                        } else {
+                            // On random
+                            var randomIndex = new Random().Next(data.Count);
+                            box.Text = data[randomIndex];
+                        }
+                        break;
+                    // Random item
+                    case Keys.Tab:
+                        if (e.Control) {
+                            allFields[pos.day + 1, pos.lesson, pos.type].Focus();
+                        }
+                        break;
+
+                    //break;                    
                 }
             });
-
-            return box;
         }
 
         #endregion
