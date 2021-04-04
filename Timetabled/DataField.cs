@@ -8,11 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace Timetabled {
     public class DataField : ComboBox {
-
         // Gui access
         private GuiManager GuiManager { get; }
-        private Storage Storage => GuiManager.storage;
-        private ControlCollection ParentControls => GuiManager.controls;
+        private Storage Storage => GuiManager.Storage;
+        private ControlCollection ParentControls => GuiManager.Controls;
 
         // Extension data
         public FieldType Type { get; }

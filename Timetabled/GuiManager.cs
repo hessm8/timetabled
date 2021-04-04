@@ -5,16 +5,20 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Timetabled {
     public class GuiManager {
-        public Control.ControlCollection controls;
-        public Storage storage;
-        private MonthCalendar calendar;
-        private DataField groupField;
+        public Control.ControlCollection Controls { get; }
+        public Storage Storage;
+        public MonthCalendar Calendar { get; }
+        public DataField GroupField { get; }
 
-        bool scheduleLoaded = false;
         public DataField[,,] allFields = new DataField[groupCount, groupCount, fieldCount];
+
+        private bool scheduleLoaded = false;
+
+        private CultureInfo culture = new CultureInfo("ru-RU");
 
         #region Constants & Measurements
 
@@ -25,22 +29,22 @@ namespace Timetabled {
 
         #endregion
         public GuiManager(Control.ControlCollection _control, Storage _storage) {
-            controls = _control;
-            storage = _storage;
+            Controls = _control;
+            Storage = _storage;
 
-            calendar = (MonthCalendar)controls.Find("SelectDate", false)[0];
+            Calendar = (MonthCalendar)Controls.Find("SelectDate", false)[0];
 
-            groupField = new DataField(this) {
+            GroupField = new DataField(this) {
                 Location = new Point(25, 391),
                 Size = new Size(200, 25),
-                Text = storage.data.groups[0]
+                Text = Storage.data.groups[0]
             };
-            controls.Add(groupField);
+            Controls.Add(GroupField);
 
             SelectLatestDate(); // Hidden hacky solution to a bug
 
             onDateChange = (sender, e) => OnDateChange(sender, e);
-            calendar.DateChanged += onDateChange;
+            Calendar.DateChanged += onDateChange;
         }
 
         #region Date & Setting Schedule 
@@ -50,31 +54,31 @@ namespace Timetabled {
 
         private void RefreshDates() {
             datePrevious = dateLatest;
-            dateLatest = calendar.SelectionStart;
+            dateLatest = Calendar.SelectionStart;
         }
         private void SelectEntireWeek() {
-            calendar.DateChanged -= onDateChange;
+            Calendar.DateChanged -= onDateChange;
 
-            var dayWeek = calendar.SelectionStart.DayOfWeek;
+            var dayWeek = Calendar.SelectionStart.DayOfWeek;
             int s = (int)dayWeek;
             if (dayWeek == DayOfWeek.Sunday) s += 7;
 
-            var d = calendar.SelectionStart;
-            calendar.SelectionStart = d.AddDays(1 - s);
-            calendar.SelectionEnd = d.AddDays(7 - s);
+            var d = Calendar.SelectionStart;
+            Calendar.SelectionStart = d.AddDays(1 - s);
+            Calendar.SelectionEnd = d.AddDays(7 - s);
 
-            calendar.DateChanged += onDateChange;
+            Calendar.DateChanged += onDateChange;
         }
         private void SelectLatestDate() {
-            storage.schedules.OrderByDescending(k => k.Key);
-            var scheduleKeys = storage.schedules.Keys.ToArray();
+            Storage.schedules.OrderByDescending(k => k.Key);
+            var scheduleKeys = Storage.schedules.Keys.ToArray();
             var date = scheduleKeys.Length == 0 ? DateTime.Now : scheduleKeys[0];
-            calendar.SelectionStart = date.AddDays(7);
+            Calendar.SelectionStart = date.AddDays(7);
 
             SelectEntireWeek();
 
-            datePrevious = calendar.SelectionStart;
-            dateLatest = calendar.SelectionStart;
+            datePrevious = Calendar.SelectionStart;
+            dateLatest = Calendar.SelectionStart;
         }
 
         DateRangeEventHandler onDateChange;
@@ -83,14 +87,37 @@ namespace Timetabled {
             SelectEntireWeek();
             RefreshDates();
 
-            var group = groupField.Text;
+            var group = GroupField.Text;
             if (scheduleLoaded) {
                 SaveSchedule(datePrevious, group);
                 LoadSchedule(dateLatest, group);
             }
         }
-        private void SaveSchedule(DateTime date, string group) {
-            var classes = storage.schedules;
+        public void LoadSchedule(DateTime date, string group) {
+            var classes = Storage.schedules;
+            for (int day = 0; day < groupCount; day++) {
+                var curDate = date.AddDays(day);
+
+                bool hasDate = classes.ContainsKey(curDate);
+                bool hasGroup = false;
+                var groupLessons = new Dictionary<string, Lesson[]>();
+                var lessons = new Lesson[6];
+
+                if (hasDate) {
+                    groupLessons = classes[curDate];
+                    hasGroup = classes[curDate].ContainsKey(group);
+                }
+
+                for (int lesson = 0; lesson < groupCount; lesson++) {
+                    for (int type = 0; type < fieldCount; type++) {
+                        string text = hasGroup ? groupLessons[group][lesson][type] : "";
+                        allFields[day, lesson, type].Text = text;
+                    }
+                }
+            }
+        }
+        public void SaveSchedule(DateTime date, string group) {
+            var classes = Storage.schedules;
             for (int dayIndex = 0; dayIndex < groupCount; dayIndex++) {
                 var curDate = date.AddDays(dayIndex);
                 bool hasDate = classes.ContainsKey(curDate);
@@ -121,48 +148,28 @@ namespace Timetabled {
                 else classes[curDate] = groupLessons;
             }
         }
-        public void LoadSchedule(DateTime date, string group) {
-            var classes = storage.schedules;
-            for (int day = 0; day < groupCount; day++) {
-                var curDate = date.AddDays(day);
-
-                bool hasDate = classes.ContainsKey(curDate);
-                bool hasGroup = false;
-                var groupLessons = new Dictionary<string, Lesson[]>();
-                var lessons = new Lesson[6];
-
-                if (hasDate) {
-                    groupLessons = classes[curDate];
-                    hasGroup = classes[curDate].ContainsKey(group);
-                }
-
-                for (int lesson = 0; lesson < groupCount; lesson++) {
-                    for (int type = 0; type < fieldCount; type++) {
-                        string text = hasGroup ? groupLessons[group][lesson][type] : "";
-                        allFields[day, lesson, type].Text = text;
-                    }
-                }
-            }
-        }
 
         #endregion
 
         #region Schedule Creation
 
-        public void CreateSchedule() {
-            controls.AddRange(CreateDayBox());
-            LoadSchedule(datePrevious, groupField.Text);
+        public GuiManager CreateSchedule() {
+            Controls.AddRange(CreateDayBox());
+            LoadSchedule(datePrevious, GroupField.Text);
             scheduleLoaded = true;
+            return this;
         }
         private Control[] CreateDayBox() {
             var elements = new Control[groupCount];
 
             for (int day = 0; day < groupCount; day++) {
                 int distance = 200;
+                
+                var dayString = culture.DateTimeFormat.GetDayName((DayOfWeek)day + 1);
+                dayString = culture.TextInfo.ToTitleCase(dayString);
 
                 var dayGroup = new GroupBox() {
-                    Name = $"dayGroup{day + 1}",
-                    Text = dayString[day],
+                    Text = dayString,
                     Location = new Point(
                         day * distance + scheduleOffset.X,
                         scheduleOffset.Y),
@@ -209,20 +216,6 @@ namespace Timetabled {
             }
             return elements;
         }
-
-        #endregion
-
-        #region String Conversions
-
-        private readonly string[] dayString = {
-            "Понедельник",
-            "Вторник",
-            "Среда",
-            "Четверг",
-            "Пятница",
-            "Суббота",
-            "Воскресенье"
-        };
 
         #endregion
     }

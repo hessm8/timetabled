@@ -56,7 +56,7 @@ namespace Timetabled {
                 }
             }
         }
-        public void Save() {
+        public void Unload() {
             string serializedData = JsonConvert.SerializeObject(data, serializerSettings);
             File.WriteAllText(DataFilepath, serializedData);
 

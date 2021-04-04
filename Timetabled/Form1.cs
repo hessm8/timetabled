@@ -16,35 +16,22 @@ namespace Timetabled {
         GuiManager gui;
         public MainForm() {
             InitializeComponent();
+            storage = new Storage();
         }
 
         private void Form_OnLoad(object sender, EventArgs e) {
-            storage = new Storage();
             storage.Load();
-
-            SelectData.SelectedIndex = 0;
-
-            gui = new GuiManager(Controls, storage);
-            gui.CreateSchedule();
-
-            //storage.schedules.Add(new DateTime(2005, 9, 15), new Dictionary<string, Lesson[]>() {
-            //    ["ПКС-81"] = new Lesson[] {
-            //        new Lesson("Математика", "Монголов", "404"),
-            //        new Lesson("Русский язык", "Маратов", "205")
-            //    },
-            //    ["Брух-55"] = new Lesson[] {
-            //        new Lesson("АКС", "Обама", "111"),
-            //        new Lesson("Искусство подтирания", "Крупенко", "222")
-            //    }
-            //});
+            gui = new GuiManager(Controls, storage).CreateSchedule();
+            AddDataSelect.SelectedIndex = 0;
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
-            storage.Save();
+            gui.SaveSchedule(SelectDate.SelectionStart, gui.GroupField.Text);
+            storage.Unload();
         }
 
         private void AddDataButton_Click(object sender, EventArgs e) {
-            var category = storage.data[SelectData.SelectedItem.ToString()];
+            var category = storage.data[AddDataSelect.SelectedItem.ToString()];
             var text = AddDataText.Text;
 
             if (text.Length == 0) {

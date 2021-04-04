@@ -26,7 +26,7 @@ namespace Timetabled {
         private void InitializeComponent() {
             this.AddDataButton = new System.Windows.Forms.Button();
             this.AddDataText = new System.Windows.Forms.TextBox();
-            this.SelectData = new System.Windows.Forms.ListBox();
+            this.AddDataSelect = new System.Windows.Forms.ListBox();
             this.DisplayScheduleButton = new System.Windows.Forms.Button();
             this.SelectDate = new System.Windows.Forms.MonthCalendar();
             this.SuspendLayout();
@@ -50,17 +50,17 @@ namespace Timetabled {
             // 
             // SelectData
             // 
-            this.SelectData.FormattingEnabled = true;
-            this.SelectData.ItemHeight = 16;
-            this.SelectData.Items.AddRange(new object[] {
+            this.AddDataSelect.FormattingEnabled = true;
+            this.AddDataSelect.ItemHeight = 16;
+            this.AddDataSelect.Items.AddRange(new object[] {
             "Дисциплина",
             "Преподаватель",
             "Группа",
             "Аудитория"});
-            this.SelectData.Location = new System.Drawing.Point(12, 16);
-            this.SelectData.Name = "SelectData";
-            this.SelectData.Size = new System.Drawing.Size(111, 68);
-            this.SelectData.TabIndex = 19;
+            this.AddDataSelect.Location = new System.Drawing.Point(12, 16);
+            this.AddDataSelect.Name = "SelectData";
+            this.AddDataSelect.Size = new System.Drawing.Size(111, 68);
+            this.AddDataSelect.TabIndex = 19;
             // 
             // DisplayScheduleButton
             // 
@@ -88,7 +88,7 @@ namespace Timetabled {
             this.ClientSize = new System.Drawing.Size(1037, 802);
             this.Controls.Add(this.SelectDate);
             this.Controls.Add(this.DisplayScheduleButton);
-            this.Controls.Add(this.SelectData);
+            this.Controls.Add(this.AddDataSelect);
             this.Controls.Add(this.AddDataText);
             this.Controls.Add(this.AddDataButton);
             this.Name = "MainForm";
@@ -104,7 +104,7 @@ namespace Timetabled {
 
         private System.Windows.Forms.Button AddDataButton;
         private System.Windows.Forms.TextBox AddDataText;
-        private System.Windows.Forms.ListBox SelectData;
+        private System.Windows.Forms.ListBox AddDataSelect;
         private System.Windows.Forms.Button DisplayScheduleButton;
         private System.Windows.Forms.MonthCalendar SelectDate;
     }
