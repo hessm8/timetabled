@@ -75,7 +75,10 @@ namespace Timetabled {
             // 
             // SelectDate
             // 
+            this.SelectDate.FirstDayOfWeek = System.Windows.Forms.Day.Monday;
             this.SelectDate.Location = new System.Drawing.Point(18, 271);
+            this.SelectDate.MaxDate = new System.DateTime(2030, 12, 31, 0, 0, 0, 0);
+            this.SelectDate.MinDate = new System.DateTime(2010, 1, 1, 0, 0, 0, 0);
             this.SelectDate.Name = "SelectDate";
             this.SelectDate.TabIndex = 24;
             // 

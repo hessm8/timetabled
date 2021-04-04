@@ -76,7 +76,8 @@ namespace Timetabled {
 
     [Serializable()]
     public class Lesson : ISerializable {
-        public Lesson(string _subject, string _teacher, string _room) {
+        public Lesson(string _subject = null, string _teacher = null,
+            string _room = null) {
             subject = _subject;
             teacher = _teacher;
             room = _room;

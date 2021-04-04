@@ -26,6 +26,17 @@ namespace Timetabled {
 
             gui = new GuiManager(Controls, storage);
             gui.CreateSchedule();
+
+            //storage.schedules.Add(new DateTime(2005, 9, 15), new Dictionary<string, Lesson[]>() {
+            //    ["ПКС-81"] = new Lesson[] {
+            //        new Lesson("Математика", "Монголов", "404"),
+            //        new Lesson("Русский язык", "Маратов", "205")
+            //    },
+            //    ["Брух-55"] = new Lesson[] {
+            //        new Lesson("АКС", "Обама", "111"),
+            //        new Lesson("Искусство подтирания", "Крупенко", "222")
+            //    }
+            //});
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
