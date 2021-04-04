@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -31,11 +32,13 @@ namespace Timetabled {
         }
 
         public Data data = new Data();
+        public AppSettings settings = new AppSettings();
 
         public Dictionary<DateTime, Dictionary<string, Lesson[]>> schedules
             = new Dictionary<DateTime, Dictionary<string, Lesson[]>>();
         private string DataFilepath => "data.json";
         private string SchedulesFilepath => "schedules.json";
+        private string SettingsFilepath => "settings.json";
 
         JsonSerializerSettings serializerSettings = new JsonSerializerSettings {
             DateFormatString = "yyyy-MM-dd"
@@ -55,6 +58,12 @@ namespace Timetabled {
                         .DeserializeObject(serializedData, schedules.GetType(), serializerSettings);
                 }
             }
+            if (File.Exists(SettingsFilepath)) {
+                serializedData = File.ReadAllText(SettingsFilepath);
+                if (new FileInfo(SettingsFilepath).Length != 0) {
+                    settings = JsonConvert.DeserializeObject<AppSettings>(serializedData, serializerSettings);
+                }
+            }
         }
         public void Unload() {
             string serializedData = JsonConvert.SerializeObject(data, serializerSettings);
@@ -62,15 +71,13 @@ namespace Timetabled {
 
             serializedData = JsonConvert.SerializeObject(schedules, serializerSettings);
             File.WriteAllText(SchedulesFilepath, serializedData);
-        }
 
-        public string ScheduleJSON() {
-            if (File.Exists(SchedulesFilepath)) {
-                if (new FileInfo(SchedulesFilepath).Length != 0) {
-                    return File.ReadAllText(SchedulesFilepath);
-                }
-            }
-            return null;
+            serializedData = JsonConvert.SerializeObject(settings, serializerSettings);
+            File.WriteAllText(SettingsFilepath, serializedData);
+        }
+        public string SerializeDate(DateTime date) {
+            var serializedData = JsonConvert.SerializeObject(schedules[date], serializerSettings);
+            return serializedData;
         }
     }
 
@@ -108,7 +115,6 @@ namespace Timetabled {
             teacher = (string)info.GetValue("teacher", typeof(string));
             room = (string)info.GetValue("room", typeof(string));
         }
-
         //Serialization
         public void GetObjectData(SerializationInfo info, StreamingContext ctxt) {
             info.AddValue("subject", subject);

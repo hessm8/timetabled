@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Globalization;
+using System.Web;
 
 namespace Timetabled {
     public partial class MainForm : Form {
@@ -45,19 +46,13 @@ namespace Timetabled {
         }
 
         private void DisplayScheduleButton_Click(object sender, EventArgs e) {
+            var serializedString = storage.SerializeDate(SelectDate.SelectionStart);
+            var file = "viewer.html";
+            var args = "?schedule=" + Uri.EscapeDataString(serializedString);
 
-            string args = "?schedule=" + storage.ScheduleJSON();
-            string fileName = @"viewer.html";
-            //new Process() {
-            //    StartInfo = new ProcessStartInfo() {
-            //        UseShellExecute = true,
-            //        FileName = fileName,
-            //        Arguments = args
-            //    }
-            //}.Start();
-            //Process.Start(GetDefaultBrowserPath(), url);
+            if (storage.settings.DefaultBrowser == null) storage.settings.CheckDefaultBrowser(file);
 
-            //var process = Process.Start(fileName + args);
+            Process.Start(storage.settings.DefaultBrowser, file + args);
         }
 
         private void OpenDatabase(object sender, EventArgs e) {

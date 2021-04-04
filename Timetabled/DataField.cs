@@ -77,7 +77,7 @@ namespace Timetabled {
                             Text = Category[randomIndex];
                         }
                         break;
-                    // Random item
+                    // Jump to the next day
                     case Keys.Tab:
                         if (e.Control && Type != FieldType.Group) {
                             GuiManager.allFields[Position.day + 1, Position.lesson, 0].Focus();
