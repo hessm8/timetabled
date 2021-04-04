@@ -8,10 +8,14 @@ using System.Text.RegularExpressions;
 
 namespace Timetabled {
     public class GuiManager {
-        private Control.ControlCollection controls;
-        private Storage storage;
+        public Control.ControlCollection controls;
+        public Storage storage;
         private MonthCalendar calendar;
-        private ComboBox groupField;
+        private DataField groupField;
+
+        bool scheduleLoaded = false;
+        public DataField[,,] allFields = new DataField[groupCount, groupCount, fieldCount];
+
         #region Constants & Measurements
 
         const int fieldCount = 3;
@@ -23,20 +27,21 @@ namespace Timetabled {
         public GuiManager(Control.ControlCollection _control, Storage _storage) {
             controls = _control;
             storage = _storage;
+
             calendar = (MonthCalendar)controls.Find("SelectDate", false)[0];
-            groupField = (ComboBox)controls.Find("groupSelect", false)[0];
+
+            groupField = new DataField(this) {
+                Location = new Point(25, 391),
+                Size = new Size(200, 25),
+                Text = storage.data.groups[0]
+            };
+            controls.Add(groupField);
 
             SelectLatestDate(); // Hidden hacky solution to a bug
 
             onDateChange = (sender, e) => OnDateChange(sender, e);
             calendar.DateChanged += onDateChange;
-
-            AssignField(ref groupField, FieldType.Group);
-            groupField.Text = storage.data.groups[0];
         }
-
-        bool scheduleLoaded = false;
-        private ComboBox[,,] allFields = new ComboBox[groupCount, groupCount, fieldCount];
 
         #region Date & Setting Schedule 
 
@@ -195,69 +200,14 @@ namespace Timetabled {
             var elements = new ComboBox[fieldCount];
 
             for (int type = 0; type < fieldCount; type++) {
-                var field = new ComboBox() {
+                var field = new DataField(this, (FieldType)type, (day, lesson)) {                    
                     Location = new Point(0, fieldSize.Height * type),
-                    Size = fieldSize,
+                    Size = fieldSize                    
                 };
-                AssignField(ref field, (FieldType)type, (day, lesson, type));
                 elements[type] = field;
                 allFields[day, lesson, type] = field;
             }
             return elements;
-        }
-        private void AssignField(ref ComboBox field, FieldType type,
-            (int day, int lesson, int type) pos = default) {
-            var category = fieldString[type];
-            var data = storage.data[category];
-            var box = field;
-
-            // Database and text field check on leave
-            box.Leave += new EventHandler((sender, e) => {
-                // Skip if empty
-                if (box.Text == "") return;
-                // Leave only Russian and special characters
-                box.Text = Regex.Replace(box.Text, @"[^-.ЁёА-Яа-я0-9\s]", "");
-                // Ask to add if item is not in database
-                if (!data.Contains(box.Text)) {
-                    var popupResult = MessageBox.Show(
-                        $"Элемента нет в списке [{category}],\nДобавить его в базу данных?",
-                        "Ошибка данных", MessageBoxButtons.YesNo);
-
-                    if (popupResult == DialogResult.Yes) {
-                        data.Add(box.Text);
-                    } else box.Text = "";
-                }
-            });
-            // Refresh the list on dropdown
-            box.DropDown += new EventHandler((sender, e) => {
-                box.Items.Clear();
-                box.Items.AddRange(data.ToArray());
-            });
-            // Key binds
-            box.KeyDown += new KeyEventHandler((sender, e) => {      
-                switch (e.KeyCode) {
-                    // Autocomplete
-                    case Keys.Enter:
-                        if (!e.Alt) {
-                            // Based on input
-                            box.Text = data.Find(t => t.ToLower()
-                            .Contains(box.Text.ToLower())) ?? box.Text;
-                        } else {
-                            // On random
-                            var randomIndex = new Random().Next(data.Count);
-                            box.Text = data[randomIndex];
-                        }
-                        break;
-                    // Random item
-                    case Keys.Tab:
-                        if (e.Control) {
-                            allFields[pos.day + 1, pos.lesson, pos.type].Focus();
-                        }
-                        break;
-
-                    //break;                    
-                }
-            });
         }
 
         #endregion
@@ -272,18 +222,6 @@ namespace Timetabled {
             "Пятница",
             "Суббота",
             "Воскресенье"
-        };
-        public enum FieldType {
-            Subject,
-            Teacher,
-            Room,
-            Group
-        }
-        private Dictionary<FieldType, string> fieldString => new Dictionary<FieldType, string>() {
-            [FieldType.Subject] = "Дисциплина",
-            [FieldType.Teacher] = "Преподаватель",
-            [FieldType.Room] = "Аудитория",
-            [FieldType.Group] = "Группа"
         };
 
         #endregion

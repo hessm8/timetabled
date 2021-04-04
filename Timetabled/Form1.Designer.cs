@@ -29,7 +29,6 @@ namespace Timetabled {
             this.SelectData = new System.Windows.Forms.ListBox();
             this.DisplayScheduleButton = new System.Windows.Forms.Button();
             this.SelectDate = new System.Windows.Forms.MonthCalendar();
-            this.groupSelect = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // AddDataButton
@@ -82,20 +81,11 @@ namespace Timetabled {
             this.SelectDate.Name = "SelectDate";
             this.SelectDate.TabIndex = 24;
             // 
-            // groupSelect
-            // 
-            this.groupSelect.FormattingEnabled = true;
-            this.groupSelect.Location = new System.Drawing.Point(18, 491);
-            this.groupSelect.Name = "groupSelect";
-            this.groupSelect.Size = new System.Drawing.Size(262, 24);
-            this.groupSelect.TabIndex = 25;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1037, 802);
-            this.Controls.Add(this.groupSelect);
             this.Controls.Add(this.SelectDate);
             this.Controls.Add(this.DisplayScheduleButton);
             this.Controls.Add(this.SelectData);
@@ -117,7 +107,6 @@ namespace Timetabled {
         private System.Windows.Forms.ListBox SelectData;
         private System.Windows.Forms.Button DisplayScheduleButton;
         private System.Windows.Forms.MonthCalendar SelectDate;
-        private System.Windows.Forms.ComboBox groupSelect;
     }
 }
 
