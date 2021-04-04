@@ -75,7 +75,7 @@ namespace Timetabled {
             serializedData = JsonConvert.SerializeObject(settings, serializerSettings);
             File.WriteAllText(SettingsFilepath, serializedData);
         }
-        public string SerializeDate(DateTime date) {
+        public string SerializeOnDate(DateTime date) {
             var serializedData = JsonConvert.SerializeObject(schedules[date], serializerSettings);
             return serializedData;
         }

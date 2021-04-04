@@ -46,11 +46,16 @@ namespace Timetabled {
         }
 
         private void DisplayScheduleButton_Click(object sender, EventArgs e) {
-            var serializedString = storage.SerializeDate(SelectDate.SelectionStart);
-            var file = "viewer.html";
-            var args = "?schedule=" + Uri.EscapeDataString(serializedString);
+            var date = SelectDate.SelectionStart;
+            var serializedString = storage.SerializeOnDate(date);
 
-            if (storage.settings.DefaultBrowser == null) storage.settings.CheckDefaultBrowser(file);
+            var file = "viewer.html";
+            var args = "?schedule=" + Uri.EscapeDataString(serializedString)
+                + "&date=" + date.ToShortDateString();
+
+            if (storage.settings.DefaultBrowser == null) {
+                storage.settings.CheckDefaultBrowser(file);
+            }
 
             Process.Start(storage.settings.DefaultBrowser, file + args);
         }
