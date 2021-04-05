@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Timetabled {
     public class AppSettings {
-        public string DefaultBrowser { get; private set; }
+        public string DefaultBrowser { get; set; }
         public void CheckDefaultBrowser(string testFilePath) {
             var browser = Process.Start(new ProcessStartInfo(testFilePath) {
                 CreateNoWindow = true
