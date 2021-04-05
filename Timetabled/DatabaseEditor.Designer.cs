@@ -44,7 +44,7 @@ namespace Timetabled {
             "Преподаватель",
             "Группа",
             "Аудитория"});
-            this.AddDataSelect.Location = new System.Drawing.Point(651, 450);
+            this.AddDataSelect.Location = new System.Drawing.Point(12, 12);
             this.AddDataSelect.Name = "AddDataSelect";
             this.AddDataSelect.Size = new System.Drawing.Size(111, 68);
             this.AddDataSelect.TabIndex = 22;
@@ -109,7 +109,7 @@ namespace Timetabled {
             this.Classroom.Name = "Classroom";
             this.Classroom.Width = 125;
             // 
-            // DatabaseManager
+            // DatabaseEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -118,7 +118,7 @@ namespace Timetabled {
             this.Controls.Add(this.AddDataSelect);
             this.Controls.Add(this.AddDataText);
             this.Controls.Add(this.AddDataButton);
-            this.Name = "DatabaseManager";
+            this.Name = "DatabaseEditor";
             this.Text = "DatabaseManager";
             this.Load += new System.EventHandler(this.DatabaseManager_Load);
             ((System.ComponentModel.ISupportInitialize)(this.DataGrid)).EndInit();

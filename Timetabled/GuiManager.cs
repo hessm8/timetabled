@@ -15,6 +15,10 @@ namespace Timetabled {
             Initialize();
         }
         public abstract void Initialize();
+        protected TControl Access<TControl>(string name) where TControl : Control {
+            var control = Controls.Find(name, false)[0];
+            return control is TControl ? (TControl)control : null;
+        }
 
         // Acessors
         public Control.ControlCollection Controls { get; }
@@ -31,7 +35,7 @@ namespace Timetabled {
             CreateSchedule();
         }
         public override void Initialize() {
-            Calendar = (MonthCalendar)Controls.Find("SelectDate", false)[0];
+            Calendar = Access<MonthCalendar>("SelectDate");
 
             GroupField = new DataField(this) {
                 Location = new Point(25, 391),
@@ -232,11 +236,26 @@ namespace Timetabled {
     }
     public class DatabaseGui : GuiManager {
         public DatabaseGui(Control.ControlCollection _control, Storage _storage)
-            : base(_control, _storage) {
-
-        }
+            : base(_control, _storage) { }
         public override void Initialize() {
-            
+            DB = new DataGridView() {
+                Location = new Point(70, 20)                
+            };
+            DB.Columns.Add("Data", "");
+            Controls.Add(DB);
+
+            Select = Access<ListBox>("AddDataSelect");
+
+            Select.SelectedIndex = 1;
         }
+
+        public DataGridView DB { get; private set; }
+        public ListBox Select { get; private set; }
+
+        #region Mess
+
+
+
+        #endregion
     }
 }
