@@ -9,13 +9,20 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Timetabled {
-    public partial class DatabaseManager : Form {
-        public DatabaseManager() {
+    public partial class DatabaseEditor : Form {
+        Storage storage;
+        DatabaseGui gui;
+        public DatabaseEditor(Storage _storage) {
             InitializeComponent();
+            storage = _storage;
         }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) {
 
+        }
+
+        private void DatabaseManager_Load(object sender, EventArgs e) {
+            gui = new DatabaseGui(Controls, storage);
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 namespace Timetabled {
     public class DataField : ComboBox {
         // Gui access
-        private GuiManager GuiManager { get; }
+        private MainGui GuiManager { get; }
         private Storage Storage => GuiManager.Storage;
         private ControlCollection ParentControls => GuiManager.Controls;
 
@@ -19,7 +19,7 @@ namespace Timetabled {
         private string CategoryName { get; }
         public (int day, int lesson) Position { get; }
 
-        public DataField(GuiManager _guiManager, FieldType _type, (int day, int lesson) _pos) {
+        public DataField(MainGui _guiManager, FieldType _type, (int day, int lesson) _pos) {
             GuiManager = _guiManager;
             Type = _type;
             Position = _pos;
@@ -29,7 +29,7 @@ namespace Timetabled {
 
             AssignField();
         }
-        public DataField(GuiManager _guiManager) {
+        public DataField(MainGui _guiManager) {
             GuiManager = _guiManager;
             Type = FieldType.Group;
 
@@ -80,7 +80,7 @@ namespace Timetabled {
                     // Jump to the next day
                     case Keys.Tab:
                         if (e.Control && Type != FieldType.Group) {
-                            GuiManager.allFields[Position.day + 1, Position.lesson, 0].Focus();
+                            GuiManager.AllFields[Position.day + 1, Position.lesson, 0].Focus();
                         }
                         break;
                 }

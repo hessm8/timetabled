@@ -8,17 +8,43 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 
 namespace Timetabled {
-    public class GuiManager {
+    public abstract class GuiManager {
+        public GuiManager(Control.ControlCollection _control, Storage _storage) {
+            Controls = _control;
+            Storage = _storage;
+            Initialize();
+        }
+        public abstract void Initialize();
+
+        // Acessors
         public Control.ControlCollection Controls { get; }
         public Storage Storage { get; }
-        public MonthCalendar Calendar { get; }
-        public DataField GroupField { get; }
+        
+        // Additional things
+        public CultureInfo culture = new CultureInfo("ru-RU");
+        protected bool scheduleLoaded = false;
+    }
+    public class MainGui : GuiManager {
+        public MainGui(Control.ControlCollection _control, Storage _storage)
+            : base(_control, _storage) {
+            AllFields = new DataField[groupCount, groupCount, fieldCount];
+            CreateSchedule();
+        }
+        public override void Initialize() {
+            Calendar = (MonthCalendar)Controls.Find("SelectDate", false)[0];
 
-        public DataField[,,] allFields = new DataField[groupCount, groupCount, fieldCount];
+            GroupField = new DataField(this) {
+                Location = new Point(25, 391),
+                Size = new Size(200, 25),
+                Text = Storage.Data["Группа"][0]
+            };
+            Controls.Add(GroupField);
 
-        private bool scheduleLoaded = false;
+            SelectLatestDate(); // Hidden hacky solution to a bug
 
-        private CultureInfo culture = new CultureInfo("ru-RU");
+            onDateChange = (sender, e) => OnDateChange(sender, e);
+            Calendar.DateChanged += onDateChange;
+        }
 
         #region Constants & Measurements
 
@@ -28,24 +54,77 @@ namespace Timetabled {
         private readonly Point scheduleOffset = new Point(300, 20);
 
         #endregion
-        public GuiManager(Control.ControlCollection _control, Storage _storage) {
-            Controls = _control;
-            Storage = _storage;
 
-            Calendar = (MonthCalendar)Controls.Find("SelectDate", false)[0];
+        public MonthCalendar Calendar { get; private set; }
+        public DataField GroupField { get; private set; }
+        public DataField[,,] AllFields { get; }
 
-            GroupField = new DataField(this) {
-                Location = new Point(25, 391),
-                Size = new Size(200, 25),
-                //Text = Storage.Data["Группа"][0]
-            };
-            Controls.Add(GroupField);
+        #region Schedule Creation
 
-            SelectLatestDate(); // Hidden hacky solution to a bug
-
-            onDateChange = (sender, e) => OnDateChange(sender, e);
-            Calendar.DateChanged += onDateChange;
+        public void CreateSchedule() {
+            Controls.AddRange(CreateDayBox());
+            LoadSchedule(datePrevious, GroupField.Text);
+            scheduleLoaded = true;
         }
+        private Control[] CreateDayBox() {
+            var elements = new Control[groupCount];
+
+            for (int day = 0; day < groupCount; day++) {
+                int distance = 200;
+
+                var dayString = culture.DateTimeFormat.GetDayName((DayOfWeek)day + 1);
+                dayString = culture.TextInfo.ToTitleCase(dayString);
+
+                var dayGroup = new GroupBox() {
+                    Text = dayString,
+                    Location = new Point(
+                        day * distance + scheduleOffset.X,
+                        scheduleOffset.Y),
+                    Size = new Size(fieldSize.Width + 42, 465)
+                };
+
+                dayGroup.Controls.AddRange(CreateLessonBox(day));
+
+                elements[day] = dayGroup;
+            }
+
+            return elements;
+        }
+        private Control[] CreateLessonBox(int day) {
+            var elements = new Control[groupCount];
+
+            for (int lesson = 0; lesson < groupCount; lesson++) {
+                int lessonOffset = lesson * (fieldSize.Height * fieldCount + 10);
+
+                var lessonPanel = new Panel() {
+                    Location = new Point(fieldSize.Height, lessonOffset + 30),
+                    Size = new Size( // Thick border around fields, yay
+                        fieldSize.Width + 2,
+                        fieldCount * fieldSize.Height + 3),
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+                lessonPanel.Controls.AddRange(CreateLessonFields(day, lesson));
+
+                elements[lesson] = lessonPanel;
+            }
+
+            return elements;
+        }
+        private ComboBox[] CreateLessonFields(int day, int lesson) {
+            var elements = new ComboBox[fieldCount];
+
+            for (int type = 0; type < fieldCount; type++) {
+                var field = new DataField(this, (FieldType)type, (day, lesson)) {
+                    Location = new Point(0, fieldSize.Height * type),
+                    Size = fieldSize
+                };
+                elements[type] = field;
+                AllFields[day, lesson, type] = field;
+            }
+            return elements;
+        }
+
+        #endregion
 
         #region Date & Setting Schedule 
 
@@ -111,7 +190,7 @@ namespace Timetabled {
                 for (int lesson = 0; lesson < groupCount; lesson++) {
                     for (int type = 0; type < fieldCount; type++) {
                         string text = hasGroup ? groupLessons[group][lesson][type] : "";
-                        allFields[day, lesson, type].Text = text;
+                        AllFields[day, lesson, type].Text = text;
                     }
                 }
             }
@@ -135,7 +214,7 @@ namespace Timetabled {
                     var curLesson = new Lesson();
 
                     for (int type = 0; type < fieldCount; type++) {
-                        curLesson[type] = allFields[dayIndex, lessonIndex, type].Text;
+                        curLesson[type] = AllFields[dayIndex, lessonIndex, type].Text;
                     }
 
                     lessonList[lessonIndex] = curLesson;
@@ -150,73 +229,14 @@ namespace Timetabled {
         }
 
         #endregion
+    }
+    public class DatabaseGui : GuiManager {
+        public DatabaseGui(Control.ControlCollection _control, Storage _storage)
+            : base(_control, _storage) {
 
-        #region Schedule Creation
-
-        public GuiManager CreateSchedule() {
-            Controls.AddRange(CreateDayBox());
-            LoadSchedule(datePrevious, GroupField.Text);
-            scheduleLoaded = true;
-            return this;
         }
-        private Control[] CreateDayBox() {
-            var elements = new Control[groupCount];
-
-            for (int day = 0; day < groupCount; day++) {
-                int distance = 200;
-                
-                var dayString = culture.DateTimeFormat.GetDayName((DayOfWeek)day + 1);
-                dayString = culture.TextInfo.ToTitleCase(dayString);
-
-                var dayGroup = new GroupBox() {
-                    Text = dayString,
-                    Location = new Point(
-                        day * distance + scheduleOffset.X,
-                        scheduleOffset.Y),
-                    Size = new Size(fieldSize.Width + 42, 465)
-                };
-
-                dayGroup.Controls.AddRange(CreateLessonBox(day));
-
-                elements[day] = dayGroup;
-            }
-
-            return elements;
+        public override void Initialize() {
+            
         }
-        private Control[] CreateLessonBox(int day) {
-            var elements = new Control[groupCount];
-
-            for (int lesson = 0; lesson < groupCount; lesson++) {
-                int lessonOffset = lesson * (fieldSize.Height * fieldCount + 10);
-
-                var lessonPanel = new Panel() {
-                    Location = new Point(fieldSize.Height, lessonOffset + 30),
-                    Size = new Size( // Thick border around fields, yay
-                        fieldSize.Width + 2,
-                        fieldCount * fieldSize.Height + 3),
-                    BorderStyle = BorderStyle.FixedSingle
-                };
-                lessonPanel.Controls.AddRange(CreateLessonFields(day, lesson));
-
-                elements[lesson] = lessonPanel;
-            }
-
-            return elements;
-        }
-        private ComboBox[] CreateLessonFields(int day, int lesson) {
-            var elements = new ComboBox[fieldCount];
-
-            for (int type = 0; type < fieldCount; type++) {
-                var field = new DataField(this, (FieldType)type, (day, lesson)) {                    
-                    Location = new Point(0, fieldSize.Height * type),
-                    Size = fieldSize                    
-                };
-                elements[type] = field;
-                allFields[day, lesson, type] = field;
-            }
-            return elements;
-        }
-
-        #endregion
     }
 }

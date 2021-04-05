@@ -14,7 +14,7 @@ using System.Web;
 namespace Timetabled {
     public partial class MainForm : Form {
         Storage storage;
-        GuiManager gui;
+        MainGui gui;
         public MainForm() {
             InitializeComponent();
             storage = new Storage();
@@ -22,7 +22,7 @@ namespace Timetabled {
 
         private void Form_OnLoad(object sender, EventArgs e) {
             storage.Load();
-            gui = new GuiManager(Controls, storage).CreateSchedule();
+            gui = new MainGui(Controls, storage);
             AddDataSelect.SelectedIndex = 0;
         }
 
@@ -61,7 +61,7 @@ namespace Timetabled {
         }
 
         private void OpenDatabase(object sender, EventArgs e) {
-            var dbManager = new DatabaseManager();
+            var dbManager = new DatabaseEditor(storage);
             dbManager.Show();
         }
     }
