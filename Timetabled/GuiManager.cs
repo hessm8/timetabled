@@ -46,8 +46,7 @@ namespace Timetabled {
 
             SelectLatestDate(); // Hidden hacky solution to a bug
 
-            onDateChange = (sender, e) => OnDateChange(sender, e);
-            Calendar.DateChanged += onDateChange;
+            Calendar.DateChanged += Calendar_DateChanged;
         }
 
         #region Constants & Measurements
@@ -140,7 +139,7 @@ namespace Timetabled {
             dateLatest = Calendar.SelectionStart;
         }
         private void SelectEntireWeek() {
-            Calendar.DateChanged -= onDateChange;
+            Calendar.DateChanged -= Calendar_DateChanged;
 
             var dayWeek = Calendar.SelectionStart.DayOfWeek;
             int s = (int)dayWeek;
@@ -150,7 +149,7 @@ namespace Timetabled {
             Calendar.SelectionStart = d.AddDays(1 - s);
             Calendar.SelectionEnd = d.AddDays(7 - s);
 
-            Calendar.DateChanged += onDateChange;
+            Calendar.DateChanged += Calendar_DateChanged;
         }
         private void SelectLatestDate() {
             Storage.Schedules.OrderByDescending(k => k.Key);
@@ -164,9 +163,7 @@ namespace Timetabled {
             dateLatest = Calendar.SelectionStart;
         }
 
-        DateRangeEventHandler onDateChange;
-
-        private void OnDateChange(object sender, DateRangeEventArgs e) {
+        private void Calendar_DateChanged(object sender, DateRangeEventArgs e) {
             SelectEntireWeek();
             RefreshDates();
 
@@ -176,6 +173,7 @@ namespace Timetabled {
                 LoadSchedule(dateLatest, group);
             }
         }
+
         public void LoadSchedule(DateTime date, string group) {
             var classes = Storage.Schedules;
             for (int day = 0; day < groupCount; day++) {
@@ -238,23 +236,71 @@ namespace Timetabled {
         public DatabaseGui(Control.ControlCollection _control, Storage _storage)
             : base(_control, _storage) { }
         public override void Initialize() {
-            DB = new DataGridView() {
-                Location = new Point(70, 20)                
+            DataGrid = new DataGridView() {
+                Location = new Point(70, 20),
+                AllowUserToDeleteRows = true,
+                AllowUserToAddRows = true,
+                AllowUserToResizeColumns = false,
+                AllowUserToResizeRows = false
             };
-            DB.Columns.Add("Data", "");
-            Controls.Add(DB);
+            DataGrid.Columns.Add("Datagrid1", " ");
+            Controls.Add(DataGrid);
 
-            Select = Access<ListBox>("AddDataSelect");
+            SelectItem = Access<ListBox>("AddDataSelect");
 
-            Select.SelectedIndex = 1;
+
+            SelectItem.SelectedIndex = 0;
+
+            previous = SelectItem.SelectedItem.ToString();
+            last = SelectItem.SelectedItem.ToString();
+
+            Load();
+            SelectItem.SelectedIndexChanged += OnIndexChange;
         }
 
-        public DataGridView DB { get; private set; }
-        public ListBox Select { get; private set; }
+        private void OnIndexChange(object sender, EventArgs e) {
+            SelectItem.SelectedIndexChanged -= OnIndexChange;
+
+            Refresh();
+            Unload();
+            Load();
+
+            SelectItem.SelectedIndexChanged += OnIndexChange;
+        }
+
+        public DataGridView DataGrid { get; private set; }
+        public ListBox SelectItem { get; private set; }
+        private DataGridViewColumn Column => DataGrid.Columns[0];
+
 
         #region Mess
 
+        string previous;
+        string last;
 
+        void Refresh() {
+            previous = last;
+            last = SelectItem.SelectedItem.ToString();
+        }
+
+        private void Load() {
+            Column.HeaderText = last;
+            var list = Storage.Data[last];
+
+            DataGrid.Rows.Clear();
+            foreach (var i in list) {
+                DataGrid.Rows.Add(i);
+            }
+        }
+        private void Unload() {
+            var list = Storage.Data[previous];
+
+            list.Clear();
+            for (int i = 0; i < DataGrid.RowCount-1; i++) {
+                var value = DataGrid.Rows[i].Cells[0].Value;                
+                if (value != null) list.Add(value.ToString());
+            }
+        }
 
         #endregion
     }

@@ -27,7 +27,7 @@ namespace Timetabled {
             CategoryName = Categories[Type];
             Category = Storage.Data[CategoryName];
 
-            AssignField();
+            SubscribeActions();
         }
         public DataField(MainGui _guiManager) {
             GuiManager = _guiManager;
@@ -36,55 +36,60 @@ namespace Timetabled {
             CategoryName = Categories[Type];
             Category = Storage.Data[CategoryName];        
 
-            AssignField();
+            SubscribeActions();
         }
 
-        public void AssignField() {
+        public void SubscribeActions() {
             // Database and text field check on leave
-            Leave += new EventHandler((sender, e) => {
-                // Skip if empty
-                if (Text == "") return;
-                // Leave only Russian and special characters
-                Text = Regex.Replace(Text, @"[^-.ЁёА-Яа-я0-9\s]", "");
-                // Ask to add if item is not in database
-                if (!Category.Contains(Text)) {
-                    var popupResult = MessageBox.Show(
-                        $"Элемента нет в списке [{CategoryName}],\nДобавить его в базу данных?",
-                        "Ошибка данных", MessageBoxButtons.YesNo);
-
-                    if (popupResult == DialogResult.Yes) {
-                        Category.Add(Text);
-                    } else Text = "";
-                }
-            });
+            Leave += DataField_Leave;
             // Refresh the list on dropdown
-            DropDown += new EventHandler((sender, e) => {
-                Items.Clear();
-                Items.AddRange(Category.ToArray());
-            });
+            DropDown += DataField_DropDown;
             // Key binds
-            KeyDown += new KeyEventHandler((sender, e) => {
-                switch (e.KeyCode) {
-                    // Autocomplete
-                    case Keys.Enter:
-                        if (!e.Alt) {
-                            // Based on input
-                            Text = Category.Find(t => t.ToLower()
-                            .Contains(Text.ToLower())) ?? Text;
-                        } else {
-                            // On random
-                            var randomIndex = new Random().Next(Category.Count);
-                            Text = Category[randomIndex];
-                        }
-                        break;
-                    // Jump to the next day
-                    case Keys.Tab:
-                        if (e.Control && Type != FieldType.Group) {
-                            GuiManager.AllFields[Position.day + 1, Position.lesson, 0].Focus();
-                        }
-                        break;
-                }
-            });
+            KeyDown += DataField_KeyDown;
+        }
+
+        // Subscribed actions
+        private void DataField_DropDown(object sender, EventArgs e) {
+            Items.Clear();
+            Items.AddRange(Category.ToArray());
+        }
+        private void DataField_KeyDown(object sender, KeyEventArgs e) {            
+            switch (e.KeyCode) {
+                // Autocomplete
+                case Keys.Enter:
+                    if (!e.Alt) {
+                        // Based on input
+                        Text = Category.Find(t => t.ToLower()
+                        .Contains(Text.ToLower())) ?? Text;
+                    } else {
+                        // On random
+                        var randomIndex = new Random().Next(Category.Count);
+                        Text = Category[randomIndex];
+                    }
+                    break;
+                // Jump to the next day
+                case Keys.Tab:
+                    if (e.Control && Type != FieldType.Group) {
+                        GuiManager.AllFields[Position.day + 1, Position.lesson, 0].Focus();
+                    }
+                    break;
+            }
+        }
+        private void DataField_Leave(object sender, EventArgs e) {
+            // Skip if empty
+            if (Text == "") return;
+            // Leave only Russian and special characters
+            Text = Regex.Replace(Text, @"[^-.ЁёА-Яа-я0-9\s]", "");
+            // Ask to add if item is not in database
+            if (!Category.Contains(Text)) {
+                var popupResult = MessageBox.Show(
+                    $"Элемента нет в списке [{CategoryName}],\nДобавить его в базу данных?",
+                    "Ошибка данных", MessageBoxButtons.YesNo);
+
+                if (popupResult == DialogResult.Yes) {
+                    Category.Add(Text);
+                } else Text = "";
+            }            
         }
 
         private Dictionary<FieldType, string> Categories => new Dictionary<FieldType, string>() {
