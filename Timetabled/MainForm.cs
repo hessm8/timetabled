@@ -32,7 +32,7 @@ namespace Timetabled {
         }
 
         private void AddDataButton_Click(object sender, EventArgs e) {
-            var category = storage.data[AddDataSelect.SelectedItem.ToString()];
+            var category = storage.Data[AddDataSelect.SelectedItem.ToString()];
             var text = AddDataText.Text;
 
             if (text.Length == 0) {
@@ -53,11 +53,11 @@ namespace Timetabled {
             var args = "?schedule=" + Uri.EscapeDataString(serializedString)
                 + "&date=" + date.ToShortDateString();
 
-            if (storage.settings.DefaultBrowser == null) {
-                storage.settings.CheckDefaultBrowser(file);
+            if (storage.Settings.DefaultBrowser == null) {
+                storage.Settings.CheckDefaultBrowser(file);
             }
 
-            Process.Start(storage.settings.DefaultBrowser, file + args);
+            Process.Start(storage.Settings.DefaultBrowser, file + args);
         }
 
         private void OpenDatabase(object sender, EventArgs e) {

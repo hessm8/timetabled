@@ -10,7 +10,7 @@ using System.Globalization;
 namespace Timetabled {
     public class GuiManager {
         public Control.ControlCollection Controls { get; }
-        public Storage Storage;
+        public Storage Storage { get; }
         public MonthCalendar Calendar { get; }
         public DataField GroupField { get; }
 
@@ -37,7 +37,7 @@ namespace Timetabled {
             GroupField = new DataField(this) {
                 Location = new Point(25, 391),
                 Size = new Size(200, 25),
-                Text = Storage.data.groups[0]
+                //Text = Storage.Data["Группа"][0]
             };
             Controls.Add(GroupField);
 
@@ -70,8 +70,8 @@ namespace Timetabled {
             Calendar.DateChanged += onDateChange;
         }
         private void SelectLatestDate() {
-            Storage.schedules.OrderByDescending(k => k.Key);
-            var scheduleKeys = Storage.schedules.Keys.ToArray();
+            Storage.Schedules.OrderByDescending(k => k.Key);
+            var scheduleKeys = Storage.Schedules.Keys.ToArray();
             var date = scheduleKeys.Length == 0 ? DateTime.Now : scheduleKeys[0];
             Calendar.SelectionStart = date.AddDays(7);
 
@@ -94,7 +94,7 @@ namespace Timetabled {
             }
         }
         public void LoadSchedule(DateTime date, string group) {
-            var classes = Storage.schedules;
+            var classes = Storage.Schedules;
             for (int day = 0; day < groupCount; day++) {
                 var curDate = date.AddDays(day);
 
@@ -117,7 +117,7 @@ namespace Timetabled {
             }
         }
         public void SaveSchedule(DateTime date, string group) {
-            var classes = Storage.schedules;
+            var classes = Storage.Schedules;
             for (int dayIndex = 0; dayIndex < groupCount; dayIndex++) {
                 var curDate = date.AddDays(dayIndex);
                 bool hasDate = classes.ContainsKey(curDate);

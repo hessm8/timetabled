@@ -25,7 +25,7 @@ namespace Timetabled {
             Position = _pos;
 
             CategoryName = Categories[Type];
-            Category = Storage.data[CategoryName];
+            Category = Storage.Data[CategoryName];
 
             AssignField();
         }
@@ -34,7 +34,7 @@ namespace Timetabled {
             Type = FieldType.Group;
 
             CategoryName = Categories[Type];
-            Category = Storage.data[CategoryName];        
+            Category = Storage.Data[CategoryName];        
 
             AssignField();
         }

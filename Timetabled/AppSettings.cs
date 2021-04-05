@@ -8,14 +8,10 @@ using Newtonsoft.Json;
 namespace Timetabled {
     public class AppSettings {
         public string DefaultBrowser { get; private set; }
-
         public void CheckDefaultBrowser(string testFilePath) {
-            var browser = new Process() {
-                StartInfo = new ProcessStartInfo(testFilePath) {
-                    CreateNoWindow = true
-                }
-            };
-            browser.Start();
+            var browser = Process.Start(new ProcessStartInfo(testFilePath) {
+                CreateNoWindow = true
+            });
             DefaultBrowser = browser.ProcessName;
             browser.Kill();
         }

@@ -7,8 +7,33 @@ using Newtonsoft.Json;
 
 namespace Timetabled {
     public class Storage {
-        public class Data {
-            public Data() {
+        public interface IStoredItem {
+            string Path { get; }
+            void Load();
+            void Unload();
+        }
+        public class StoredItem<TItem> : IStoredItem where TItem : class {
+            public StoredItem(TItem item, string filename) {
+                DataItem = item;
+                Path = filename + ".json";
+            }
+            public string Path { get; }
+            public TItem DataItem { get; private set; }
+            public void Load() {
+                if (File.Exists(Path)) {
+                    var serializedData = File.ReadAllText(Path);
+                    if (new FileInfo(Path).Length != 0) {
+                        DataItem = JsonConvert.DeserializeObject<TItem>(serializedData, JsonSettings);
+                    }
+                }
+            }
+            public void Unload() {
+                var serializedData = JsonConvert.SerializeObject(DataItem, JsonSettings);
+                File.WriteAllText(Path, serializedData);
+            }
+        }
+        public class ScheduleData {
+            public ScheduleData() {
                 groups = new List<string>();
                 subjects = new List<string>();
                 teachers = new List<string>();
@@ -30,54 +55,43 @@ namespace Timetabled {
             public List<string> teachers { get; set; }
             public List<string> rooms { get; set; }
         }
+        public Storage() {
+            Data = new ScheduleData();
+            Settings = new AppSettings();
+            Schedules = new Dictionary<DateTime, Dictionary<string, Lesson[]>>();
+            UpdateStoredItems();
+        }
 
-        public Data data = new Data();
-        public AppSettings settings = new AppSettings();
+        private void UpdateStoredItems() {
+            StoredItems = new List<IStoredItem>() {
+                new StoredItem<ScheduleData>(Data, "data"),
+                new StoredItem<Dictionary<DateTime, Dictionary<string, Lesson[]>>>(Schedules, "schedules"),
+                new StoredItem<AppSettings>(Settings, "settings")
+            };
+        } 
 
-        public Dictionary<DateTime, Dictionary<string, Lesson[]>> schedules
-            = new Dictionary<DateTime, Dictionary<string, Lesson[]>>();
-        private string DataFilepath => "data.json";
-        private string SchedulesFilepath => "schedules.json";
-        private string SettingsFilepath => "settings.json";
+        List<IStoredItem> StoredItems { get; set; }
 
-        JsonSerializerSettings serializerSettings = new JsonSerializerSettings {
+        // Stored items
+        public ScheduleData Data { get; }
+        public AppSettings Settings { get; }
+        public Dictionary<DateTime, Dictionary<string, Lesson[]>> Schedules { get; }
+
+        // JSON Convertation
+        public static JsonSerializerSettings JsonSettings => new JsonSerializerSettings {            
+            Formatting = Formatting.Indented,
             DateFormatString = "yyyy-MM-dd"
         };
         public void Load() {
-            string serializedData;
-            if (File.Exists(DataFilepath)) {
-                serializedData = File.ReadAllText(DataFilepath);
-                if (new FileInfo(DataFilepath).Length != 0) {
-                    data = JsonConvert.DeserializeObject<Data>(serializedData, serializerSettings);
-                }
-            }
-            if (File.Exists(SchedulesFilepath)) {
-                serializedData = File.ReadAllText(SchedulesFilepath);
-                if (new FileInfo(SchedulesFilepath).Length != 0) {
-                    schedules = (Dictionary<DateTime, Dictionary<string, Lesson[]>>)JsonConvert
-                        .DeserializeObject(serializedData, schedules.GetType(), serializerSettings);
-                }
-            }
-            if (File.Exists(SettingsFilepath)) {
-                serializedData = File.ReadAllText(SettingsFilepath);
-                if (new FileInfo(SettingsFilepath).Length != 0) {
-                    settings = JsonConvert.DeserializeObject<AppSettings>(serializedData, serializerSettings);
-                }
-            }
+            //UpdateStoredItems();
+            StoredItems.ForEach(s => s.Load());
         }
         public void Unload() {
-            string serializedData = JsonConvert.SerializeObject(data, serializerSettings);
-            File.WriteAllText(DataFilepath, serializedData);
-
-            serializedData = JsonConvert.SerializeObject(schedules, serializerSettings);
-            File.WriteAllText(SchedulesFilepath, serializedData);
-
-            serializedData = JsonConvert.SerializeObject(settings, serializerSettings);
-            File.WriteAllText(SettingsFilepath, serializedData);
+            //UpdateStoredItems();
+            StoredItems.ForEach(s => s.Unload());
         }
         public string SerializeOnDate(DateTime date) {
-            var serializedData = JsonConvert.SerializeObject(schedules[date], serializerSettings);
-            return serializedData;
+            return JsonConvert.SerializeObject(Schedules[date], JsonSettings);
         }
     }
 
