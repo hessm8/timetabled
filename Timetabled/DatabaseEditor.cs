@@ -30,17 +30,5 @@ namespace Timetabled {
         private void AddDataSelect_SelectedIndexChanged(object sender, EventArgs e) {
 
         }
-
-        private void CancelChangesButton_Click(object sender, EventArgs e) {
-            gui.LoadData();
-        }
-
-        private void AcceptChangesButton_Click(object sender, EventArgs e) {
-            gui.UnloadData();
-        }
-
-        private void DatabaseEditor_FormClosed(object sender, FormClosedEventArgs e) {
-            gui.UnloadData();
-        }
     }
 }
