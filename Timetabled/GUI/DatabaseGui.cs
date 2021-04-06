@@ -31,7 +31,7 @@ namespace Timetabled.GUI {
 
             selected = new State<string>(() => SelectItem.SelectedItem.ToString());
 
-            SaveCategoryData();
+            LoadCategoryData();
             SelectItem.SelectedIndexChanged += OnIndexChange;
         }
 
@@ -39,7 +39,7 @@ namespace Timetabled.GUI {
             SelectItem.SelectedIndexChanged -= OnIndexChange;
 
             selected.Update();
-            if (Storage.Settings.AutosaveOnCategoryChange) SaveCategoryData();
+            if (Storage.Settings.AutosaveOnCategoryChange) LoadCategoryData();
 
             SelectItem.SelectedIndexChanged += OnIndexChange;
         }
@@ -54,22 +54,23 @@ namespace Timetabled.GUI {
 
         State<string> selected;
 
-        private void SaveCategoryData() {          
-            // Unload
-            var loadTo = Storage.Data[selected.Previous];
-
-            loadTo.Clear();
-            for (int i = 0; i < DataGrid.RowCount - 1; i++) {
-                var value = DataGrid[0, i].Value;
-                if (value != null) loadTo.Add(value.ToString());
-            }
-            // Load
+        private void LoadCategoryData() {
             Header.HeaderText = selected.Latest;
             var unloadFrom = Storage.Data[selected.Latest];
 
             DataGrid.Rows.Clear();
             foreach (var i in unloadFrom) {
                 DataGrid.Rows.Add(i);
+            }
+        }
+
+        private void UnloadCategoryData() {
+            var loadTo = Storage.Data[selected.Previous];
+
+            loadTo.Clear();
+            for (int i = 0; i < DataGrid.RowCount - 1; i++) {
+                var value = DataGrid[0, i].Value;
+                if (value != null) loadTo.Add(value.ToString());
             }
         }
 

@@ -133,10 +133,9 @@ namespace Timetabled.GUI {
             Calendar.DateChanged += Calendar_DateChanged;
         }
         private void SelectLatestDate() {
-            Storage.Schedules.OrderByDescending(k => k.Key);
-            var scheduleKeys = Storage.Schedules.Keys.ToArray();
-            var date = scheduleKeys.Length == 0 ? DateTime.Now : scheduleKeys[0];
-            Calendar.SelectionStart = date.AddDays(7);
+            var ordered = Storage.Schedules.Keys.OrderByDescending(k => k).ToArray();
+            var date = ordered.Length == 0 ? DateTime.Now : ordered[0];
+            Calendar.SelectionStart = date;//.AddDays(7);
 
             SelectEntireWeek();
 
@@ -155,66 +154,94 @@ namespace Timetabled.GUI {
             SelectEntireWeek();
             Dates.Update();
 
-            if (scheduleLoaded) {
+            if (scheduleLoaded && Groups.Latest != "") {
                 UnloadSchedule(Dates.Previous, Groups.Latest);
                 LoadSchedule();
             }
         }
-
+        
         public void UnloadSchedule(DateTime date, string group) {
             var classes = Storage.Schedules;
-            for (int dayIndex = 0; dayIndex < groupCount; dayIndex++) {
-                var curDate = date.AddDays(dayIndex);
-                bool hasDate = classes.ContainsKey(curDate);
-                bool hasGroup = false;
 
-                var groupLessons = new Dictionary<string, Lesson[]>();
+            for (int d = 0; d < groupCount; d++) {
+                var lessons = new List<Lesson>();
+                var fieldsBlank = new List<bool>();
 
-                if (hasDate) {
-                    groupLessons = classes[curDate];
-                    hasGroup = classes[curDate].ContainsKey(group);
-                }
+                // Read all lessons
+                for (int l = 0; l < groupCount; l++) {
+                    var lesson = new Lesson();
+                    bool blank = true;
 
-                var lessonList = new Lesson[6];
-                for (int lessonIndex = 0; lessonIndex < groupCount; lessonIndex++) {
-                    var curLesson = new Lesson();
-
-                    for (int type = 0; type < fieldCount; type++) {
-                        curLesson[type] = AllFields[dayIndex, lessonIndex, type].Text;
+                    // Read all type fields
+                    for (int t = 0; t < fieldCount; t++) {
+                        var text = AllFields[d, l, t].Text;
+                        lesson[t] = text;
+                        // If all fields are blank
+                        blank = blank && text == "";
                     }
 
-                    lessonList[lessonIndex] = curLesson;
+                    lessons.Add(lesson);
+                    fieldsBlank.Add(blank);
                 }
 
-                if (!hasGroup) groupLessons.Add(group, lessonList);
-                else groupLessons[group] = lessonList;
+                // Remove empty lessons at end
+                for (int l = groupCount-1; l >= 0; l--) {
+                    if (fieldsBlank[l]) lessons.RemoveAt(l);
+                    else break;
+                }
 
-                if (!hasDate) classes.Add(curDate, groupLessons);
-                else classes[curDate] = groupLessons;
+                if (lessons.Count == 0) continue;
+
+                var day = date.AddDays(d);                
+
+                if (!classes.ContainsKey(day)) {
+                    classes[day] = new Dictionary<string, Lesson[]>();
+                }
+
+                var arr = lessons.ToArray();
+                if (!classes[day].ContainsKey(group)) {
+                    classes[day].Add(group, arr);
+                } else classes[day][group] = arr;
             }
         }
         public void LoadSchedule() {
             var classes = Storage.Schedules;
-            for (int day = 0; day < groupCount; day++) {
-                var curDate = Dates.Latest.AddDays(day);
+            var group = Groups.Latest;
 
-                bool hasDate = classes.ContainsKey(curDate);
-                bool hasGroup = false;
-                var groupLessons = new Dictionary<string, Lesson[]>();
-                var lessons = new Lesson[6];
+            // Clear all fields
+            foreach (var f in AllFields) f.Text = "";
 
-                if (hasDate) {
-                    groupLessons = classes[curDate];
-                    hasGroup = classes[curDate].ContainsKey(Groups.Latest);
-                }
+            for (int d = 0; d < groupCount; d++) {
+                var day = Dates.Latest.AddDays(d);
 
-                for (int lesson = 0; lesson < groupCount; lesson++) {
-                    for (int type = 0; type < fieldCount; type++) {
-                        string text = hasGroup ? groupLessons[Groups.Latest][lesson][type] : "";
-                        AllFields[day, lesson, type].Text = text;
+                // Skip if no day or group
+                if (!classes.ContainsKey(day)) continue;
+                if (!classes[day].ContainsKey(group)) continue;
+
+                var lessons = classes[day][group];
+                for (int l = 0; l < lessons.Length; l++) {
+                    for (int t = 0; t < fieldCount; t++) {
+                        AllFields[d, l, t].Text = lessons[l][t];
                     }
                 }
             }
+        }
+
+        public void OpenSchedule() {
+            UnloadSchedule(Dates.Latest, Groups.Latest);
+            var serializedString = Storage.SerializeOnDate(Dates.Latest);
+
+            if (serializedString == null) return;
+
+            var file = "lib\\viewer.html";
+            var args = "?schedule=" + Uri.EscapeDataString(serializedString)
+                + "&date=" + Dates.Latest.ToShortDateString();
+
+            if (Storage.Settings.DefaultBrowser == null) {
+                Storage.Settings.CheckDefaultBrowser(file);
+            }
+
+            Process.Start(Storage.Settings.DefaultBrowser, file + args);
         }
 
         #endregion

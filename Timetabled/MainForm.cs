@@ -31,7 +31,7 @@ namespace Timetabled {
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
-            gui.UnloadSchedule(gui.Dates.Latest, gui.Groups.Latest);
+            if (gui.Groups.Latest != "") gui.UnloadSchedule(gui.Dates.Latest, gui.Groups.Latest);
             storage.Unload();
         }
 
@@ -50,18 +50,7 @@ namespace Timetabled {
         }
 
         private void DisplayScheduleButton_Click(object sender, EventArgs e) {
-            var date = SelectDate.SelectionStart;
-            var serializedString = storage.SerializeOnDate(date);
-
-            var file = "viewer.html";
-            var args = "?schedule=" + Uri.EscapeDataString(serializedString)
-                + "&date=" + date.ToShortDateString();
-
-            if (storage.Settings.DefaultBrowser == null) {
-                storage.Settings.CheckDefaultBrowser(file);
-            }
-
-            Process.Start(storage.Settings.DefaultBrowser, file + args);
+            gui.OpenSchedule();
         }
 
         private void OpenDatabase(object sender, EventArgs e) {
