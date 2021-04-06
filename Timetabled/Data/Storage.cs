@@ -30,12 +30,7 @@ namespace Timetabled.Data {
             string serializedData;
             var path = Path.GetFullPath("data");
             if (Directory.Exists(path)) {
-                if (File.Exists(DataFilepath)) {
-                    serializedData = File.ReadAllText(DataFilepath);
-                    if (new FileInfo(DataFilepath).Length != 0) {
-                        Data = JsonConvert.DeserializeObject<ScheduleData>(serializedData, JsonSettings);
-                    }
-                }
+                Data = LoadScheduleData();
                 if (File.Exists(SchedulesFilepath)) {
                     serializedData = File.ReadAllText(SchedulesFilepath);
                     if (new FileInfo(SchedulesFilepath).Length != 0) {
@@ -52,8 +47,8 @@ namespace Timetabled.Data {
             } else Directory.CreateDirectory(path);            
         }
         public void Unload() {
-            string serializedData = JsonConvert.SerializeObject(Data, JsonSettings);
-            File.WriteAllText(DataFilepath, serializedData);
+            string serializedData;
+            UnloadScheduleData(Data);
 
             serializedData = JsonConvert.SerializeObject(Schedules, JsonSettings);
             File.WriteAllText(SchedulesFilepath, serializedData);
@@ -61,10 +56,24 @@ namespace Timetabled.Data {
             serializedData = JsonConvert.SerializeObject(Settings, JsonSettings);
             File.WriteAllText(SettingsFilepath, serializedData);
         }
+        public ScheduleData LoadScheduleData() {
+            if (File.Exists(DataFilepath)) {
+                var serializedData = File.ReadAllText(DataFilepath);
+                if (new FileInfo(DataFilepath).Length != 0) {
+                    return JsonConvert.DeserializeObject<ScheduleData>(serializedData, JsonSettings);
+                }
+            }
+            return null;
+        }
+        public void UnloadScheduleData(ScheduleData data) {
+            var serializedData = JsonConvert.SerializeObject(data, JsonSettings);
+            File.WriteAllText(DataFilepath, serializedData);
+        }
 
         public string SerializeOnDate(DateTime date) {
             if (!Schedules.ContainsKey(date)) return null;
-            return JsonConvert.SerializeObject(Schedules[date], JsonSettings);
+            return JsonConvert.SerializeObject(Schedules[date],
+                new JsonSerializerSettings() { DateFormatString = "yyyy-MM-dd" });
         }
     }
 }

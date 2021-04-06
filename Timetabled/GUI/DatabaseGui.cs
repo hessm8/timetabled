@@ -15,7 +15,7 @@ namespace Timetabled.GUI {
             : base(_control, _storage) { }
         public override void Initialize() {
             DataGrid = new DataGridView() {
-                Location = new Point(70, 20),
+                Location = new Point(12, 86),
                 AllowUserToDeleteRows = true,
                 AllowUserToAddRows = true,
                 AllowUserToResizeColumns = false,
@@ -31,15 +31,25 @@ namespace Timetabled.GUI {
 
             selected = new State<string>(() => SelectItem.SelectedItem.ToString());
 
-            SaveCategoryData();
+            ScheduleData = new ScheduleData();
+            LoadData();
+            LoadCategoryData();
+
             SelectItem.SelectedIndexChanged += OnIndexChange;
+        }
+
+        public void LoadData() => ScheduleData = Storage.LoadScheduleData();
+        public void UnloadData() { 
+            Storage.UnloadScheduleData(ScheduleData);
+            Storage.Data = Storage.LoadScheduleData();
         }
 
         private void OnIndexChange(object sender, EventArgs e) {
             SelectItem.SelectedIndexChanged -= OnIndexChange;
 
             selected.Update();
-            if (Storage.Settings.AutosaveOnCategoryChange) SaveCategoryData();
+            UnloadCategoryData();
+            LoadCategoryData();
 
             SelectItem.SelectedIndexChanged += OnIndexChange;
         }
@@ -54,18 +64,23 @@ namespace Timetabled.GUI {
 
         State<string> selected;
 
-        private void SaveCategoryData() {          
-            // Unload
-            var loadTo = Storage.Data[selected.Previous];
+        private void UnloadCategoryData() {            
+            var loadTo = ScheduleData[selected.Previous];
 
             loadTo.Clear();
             for (int i = 0; i < DataGrid.RowCount - 1; i++) {
                 var value = DataGrid[0, i].Value;
                 if (value != null) loadTo.Add(value.ToString());
             }
-            // Load
+
+            if (Storage.Settings.AutosaveOnCategoryChange) {
+                Storage.Data[selected.Previous] = loadTo.ToList();
+            }
+        }
+
+        private void LoadCategoryData() {
             Header.HeaderText = selected.Latest;
-            var unloadFrom = Storage.Data[selected.Latest];
+            var unloadFrom = ScheduleData[selected.Latest];
 
             DataGrid.Rows.Clear();
             foreach (var i in unloadFrom) {

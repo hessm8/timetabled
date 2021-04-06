@@ -91,6 +91,7 @@
     <Compile Include="GUI\ScheduleField.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\State.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
