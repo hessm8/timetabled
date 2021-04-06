@@ -43,9 +43,11 @@ namespace Timetabled.GUI {
 
         private DateTime Date => GuiManager.Calendar.SelectionStart.AddDays(Position.day);    
         private bool ItemAvailable(string item) {
-            foreach (var group in Storage.Schedules[Date]) {
-                var lesson = group.Value[Position.lesson];
-                if (lesson[(int)Type] == item) return Text == item;
+            if (Storage.Schedules.ContainsKey(Date)) {
+                foreach (var group in Storage.Schedules[Date]) {
+                    var lesson = group.Value[Position.lesson];
+                    if (lesson[(int)Type] == item) return Text == item;
+                }
             }
             return true;
         }

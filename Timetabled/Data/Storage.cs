@@ -22,30 +22,35 @@ namespace Timetabled.Data {
             Formatting = Formatting.Indented,
             DateFormatString = "yyyy-MM-dd"
         };
-        private string DataFilepath => "data.json";
-        private string SchedulesFilepath => "schedules.json";
-        private string SettingsFilepath => "settings.json";
+        private string DataFilepath => "data\\scheduleData.json";
+        private string SchedulesFilepath => "data\\schedules.json";
+        private string SettingsFilepath => "data\\settings.json";
 
         public void Load() {
             string serializedData;
-            if (File.Exists(DataFilepath)) {
-                serializedData = File.ReadAllText(DataFilepath);
-                if (new FileInfo(DataFilepath).Length != 0) {
-                    Data = JsonConvert.DeserializeObject<ScheduleData>(serializedData, JsonSettings);
+            var path = Path.GetFullPath("data");
+            if (Directory.Exists(path)) {
+                if (File.Exists(DataFilepath)) {
+                    serializedData = File.ReadAllText(DataFilepath);
+                    if (new FileInfo(DataFilepath).Length != 0) {
+                        Data = JsonConvert.DeserializeObject<ScheduleData>(serializedData, JsonSettings);
+                    }
                 }
-            }
-            if (File.Exists(SchedulesFilepath)) {
-                serializedData = File.ReadAllText(SchedulesFilepath);
-                if (new FileInfo(SchedulesFilepath).Length != 0) {
-                    Schedules = (Dictionary<DateTime, Dictionary<string, Lesson[]>>)JsonConvert
-                        .DeserializeObject(serializedData, Schedules.GetType(), JsonSettings);
+                if (File.Exists(SchedulesFilepath)) {
+                    serializedData = File.ReadAllText(SchedulesFilepath);
+                    if (new FileInfo(SchedulesFilepath).Length != 0) {
+                        Schedules = (Dictionary<DateTime, Dictionary<string, Lesson[]>>)JsonConvert
+                            .DeserializeObject(serializedData, Schedules.GetType(), JsonSettings);
+                    }
                 }
-            }
-            if (File.Exists(SettingsFilepath)) {
-                serializedData = File.ReadAllText(SettingsFilepath);
-                if (new FileInfo(SettingsFilepath).Length != 0) {
-                    Settings = JsonConvert.DeserializeObject<AppSettings>(serializedData, JsonSettings);
+                if (File.Exists(SettingsFilepath)) {
+                    serializedData = File.ReadAllText(SettingsFilepath);
+                    if (new FileInfo(SettingsFilepath).Length != 0) {
+                        Settings = JsonConvert.DeserializeObject<AppSettings>(serializedData, JsonSettings);
+                    }
                 }
+            } else {
+                DirectoryInfo di = Directory.CreateDirectory(path);
             }
         }
         public void Unload() {
