@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timetabled.Data;
+using Timetabled.GUI;
 
 namespace Timetabled {
     public partial class DatabaseEditor : Form {

@@ -7,8 +7,9 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Timetabled.Helpers;
+using Timetabled.Data;
 
-namespace Timetabled {
+namespace Timetabled.GUI {
     public abstract class GuiManager {
         public abstract void Initialize();
         public GuiManager(Control.ControlCollection _control, Storage _storage) {

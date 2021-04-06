@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization;
-using Newtonsoft.Json;
 
-namespace Timetabled {
+namespace Timetabled.Data {
     public class AppSettings {
         public string DefaultBrowser { get; set; }
         public void CheckDefaultBrowser(string testFilePath) {

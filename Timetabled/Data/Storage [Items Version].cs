@@ -5,7 +5,7 @@
 //using System.Runtime.Serialization;
 //using Newtonsoft.Json;
 
-//namespace Timetabled {
+//namespace Timetabled.Data {
 //    public class Storage {
 //        public interface IStoredItem {
 //            string Path { get; }

@@ -10,6 +10,8 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Globalization;
 using System.Web;
+using Timetabled.Data;
+using Timetabled.GUI;
 
 namespace Timetabled {
     public partial class MainForm : Form {

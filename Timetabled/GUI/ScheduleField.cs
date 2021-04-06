@@ -6,8 +6,9 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Timetabled.Helpers;
+using Timetabled.Data;
 
-namespace Timetabled {
+namespace Timetabled.GUI {
     public class ScheduleField : ComboBox {
         // Gui access
         private MainGui GuiManager { get; }
@@ -44,9 +45,9 @@ namespace Timetabled {
         private bool ItemAvailable(string item) {
             foreach (var group in Storage.Schedules[Date]) {
                 var lesson = group.Value[Position.lesson];
-                if (lesson[(int)Type] == item) return false;
+                if (lesson[(int)Type] == item) return Text == item;
             }
-            return Text == item;
+            return true;
         }
 
         public void SubscribeActions() {
