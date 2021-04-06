@@ -25,9 +25,22 @@ namespace Timetabled.GUI {
 
             SelectLatestDate();
 
-            Calendar.DateChanged += Calendar_DateChanged;
-            GroupField.TextChanged += GroupField_TextChanged;
+            Dates = new State<DateTime>(() => Calendar.SelectionStart);
+            Groups = new State<string>(() => GroupField.Text);
+
+            Calendar.DateChanged += OnDateChange;
+            GroupField.TextChanged += OnGroupChange;
+            Calendar.MouseDown += Calendar_MouseDown;
         }
+
+        private void Calendar_MouseDown(object sender, MouseEventArgs e) {
+            // Use to cancel DateChanged thing
+            if (e.Y < 24) {
+                if (e.X < 20) { } //Left arrow
+                else if (e.X > 205) { } // Right arrow
+            }
+        }
+
         public MainGui(Control.ControlCollection _control, Storage _storage)
             : base(_control, _storage) {
             AllFields = new ScheduleField[groupCount, groupCount, fieldCount];
@@ -114,52 +127,8 @@ namespace Timetabled.GUI {
 
         #endregion
 
-        #region Date & Setting Schedule 
+        #region Schedule Loading 
 
-        public State<DateTime> Dates { get; private set; }
-        public State<string> Groups { get; private set; }
-
-        private void SelectEntireWeek() {
-            Calendar.DateChanged -= Calendar_DateChanged;
-
-            var dayWeek = Calendar.SelectionStart.DayOfWeek;
-            int s = (int)dayWeek;
-            if (dayWeek == DayOfWeek.Sunday) s += 7;
-
-            var d = Calendar.SelectionStart;
-            Calendar.SelectionStart = d.AddDays(1 - s);
-            Calendar.SelectionEnd = d.AddDays(7 - s);
-
-            Calendar.DateChanged += Calendar_DateChanged;
-        }
-        private void SelectLatestDate() {
-            var ordered = Storage.Schedules.Keys.OrderByDescending(k => k).ToArray();
-            var date = ordered.Length == 0 ? DateTime.Now : ordered[0];
-            Calendar.SelectionStart = date;//.AddDays(7);
-
-            SelectEntireWeek();
-
-            Dates = new State<DateTime>(() => Calendar.SelectionStart);
-            Groups = new State<string>(() => GroupField.Text);
-        }
-
-        private void GroupField_TextChanged(object sender, EventArgs e) {
-            if (scheduleLoaded && Storage.Data["Группа"].Contains(GroupField.Text)) {
-                Groups.Update();
-                UnloadSchedule(Dates.Previous, Groups.Previous);
-                LoadSchedule();
-            }
-        }
-        private void Calendar_DateChanged(object sender, DateRangeEventArgs e) {
-            SelectEntireWeek();
-            Dates.Update();
-
-            if (scheduleLoaded && Groups.Latest != "") {
-                UnloadSchedule(Dates.Previous, Groups.Latest);
-                LoadSchedule();
-            }
-        }
-        
         public void UnloadSchedule(DateTime date, string group) {
             var classes = Storage.Schedules;
 
@@ -185,14 +154,14 @@ namespace Timetabled.GUI {
                 }
 
                 // Remove empty lessons at end
-                for (int l = groupCount-1; l >= 0; l--) {
+                for (int l = groupCount - 1; l >= 0; l--) {
                     if (fieldsBlank[l]) lessons.RemoveAt(l);
                     else break;
                 }
 
                 if (lessons.Count == 0) continue;
 
-                var day = date.AddDays(d);                
+                var day = date.AddDays(d);
 
                 if (!classes.ContainsKey(day)) {
                     classes[day] = new Dictionary<string, Lesson[]>();
@@ -226,7 +195,6 @@ namespace Timetabled.GUI {
                 }
             }
         }
-
         public void OpenSchedule() {
             UnloadSchedule(Dates.Latest, Groups.Latest);
             var serializedString = Storage.SerializeOnDate(Dates.Latest);
@@ -242,6 +210,56 @@ namespace Timetabled.GUI {
             }
 
             Process.Start(Storage.Settings.DefaultBrowser, file + args);
+        }
+
+        #endregion
+
+        #region Schedule Commands & Events
+
+        public State<DateTime> Dates { get; private set; }
+        public State<string> Groups { get; private set; }
+
+        private void SelectEntireWeek() {
+            Calendar.DateChanged -= OnDateChange;
+
+            var dayWeek = Calendar.SelectionStart.DayOfWeek;
+            int s = (int)dayWeek;
+            if (dayWeek == DayOfWeek.Sunday) s += 7;
+
+            var d = Calendar.SelectionStart;
+            Calendar.SelectionStart = d.AddDays(1 - s);
+            Calendar.SelectionEnd = d.AddDays(7 - s);
+
+            Calendar.DateChanged += OnDateChange;
+        }
+
+        private void SelectLatestDate() {
+            var date = DateTime.Now;
+            if (Storage.Schedules.Count > 0) {
+                date = Storage.Schedules.Keys
+                    .OrderByDescending(k => k)
+                    .ToArray()[0];
+            }
+
+            Calendar.SelectionStart = date;
+            SelectEntireWeek();            
+        }
+
+        private void OnGroupChange(object sender, EventArgs e) {
+            if (scheduleLoaded && Storage.Data["Группа"].Contains(GroupField.Text)) {
+                Groups.Update();
+                UnloadSchedule(Dates.Previous, Groups.Previous);
+                LoadSchedule();
+            }
+        }
+        private void OnDateChange(object sender, DateRangeEventArgs e) {
+            SelectEntireWeek();
+            Dates.Update();
+
+            if (scheduleLoaded && Groups.Latest != "") {
+                UnloadSchedule(Dates.Previous, Groups.Latest);
+                LoadSchedule();
+            }
         }
 
         #endregion
