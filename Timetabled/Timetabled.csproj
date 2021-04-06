@@ -86,6 +86,8 @@
     </Compile>
     <Compile Include="Data\Lesson.cs" />
     <Compile Include="Data\ScheduleData.cs" />
+    <Compile Include="GUI\DatabaseGui.cs" />
+    <Compile Include="GUI\MainGui.cs" />
     <Compile Include="GUI\ScheduleField.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -49,9 +49,7 @@ namespace Timetabled.Data {
                         Settings = JsonConvert.DeserializeObject<AppSettings>(serializedData, JsonSettings);
                     }
                 }
-            } else {
-                DirectoryInfo di = Directory.CreateDirectory(path);
-            }
+            } else Directory.CreateDirectory(path);            
         }
         public void Unload() {
             string serializedData = JsonConvert.SerializeObject(Data, JsonSettings);
