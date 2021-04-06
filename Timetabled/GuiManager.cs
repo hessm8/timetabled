@@ -6,15 +6,16 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using Timetabled.Helpers;
 
 namespace Timetabled {
     public abstract class GuiManager {
+        public abstract void Initialize();
         public GuiManager(Control.ControlCollection _control, Storage _storage) {
             Controls = _control;
             Storage = _storage;
             Initialize();
         }
-        public abstract void Initialize();
         protected TControl Access<TControl>(string name) where TControl : Control {
             var control = Controls.Find(name, false)[0];
             return control is TControl ? (TControl)control : null;
@@ -29,24 +30,27 @@ namespace Timetabled {
         protected bool scheduleLoaded = false;
     }
     public class MainGui : GuiManager {
-        public MainGui(Control.ControlCollection _control, Storage _storage)
-            : base(_control, _storage) {
-            AllFields = new DataField[groupCount, groupCount, fieldCount];
-            CreateSchedule();
-        }
         public override void Initialize() {
             Calendar = Access<MonthCalendar>("SelectDate");
 
-            GroupField = new DataField(this) {
+            GroupField = new ScheduleField(this) {
                 Location = new Point(25, 391),
-                Size = new Size(200, 25),
-                Text = Storage.Data["Группа"][0]
+                Size = new Size(200, 25),                
             };
+            if (Storage.Data["Группа"].Count > 0) {
+                GroupField.Text = Storage.Data["Группа"][0];
+            }
             Controls.Add(GroupField);
 
-            SelectLatestDate(); // Hidden hacky solution to a bug
+            SelectLatestDate();
 
             Calendar.DateChanged += Calendar_DateChanged;
+            GroupField.TextChanged += GroupField_TextChanged;            
+        }
+        public MainGui(Control.ControlCollection _control, Storage _storage)
+            : base(_control, _storage) {
+            AllFields = new ScheduleField[groupCount, groupCount, fieldCount];
+            CreateSchedule();
         }
 
         #region Constants & Measurements
@@ -59,14 +63,14 @@ namespace Timetabled {
         #endregion
 
         public MonthCalendar Calendar { get; private set; }
-        public DataField GroupField { get; private set; }
-        public DataField[,,] AllFields { get; }
+        public ScheduleField GroupField { get; private set; }
+        public ScheduleField[,,] AllFields { get; }
 
         #region Schedule Creation
 
         public void CreateSchedule() {
             Controls.AddRange(CreateDayBox());
-            LoadSchedule(datePrevious, GroupField.Text);
+            LoadSchedule();
             scheduleLoaded = true;
         }
         private Control[] CreateDayBox() {
@@ -117,7 +121,7 @@ namespace Timetabled {
             var elements = new ComboBox[fieldCount];
 
             for (int type = 0; type < fieldCount; type++) {
-                var field = new DataField(this, (FieldType)type, (day, lesson)) {
+                var field = new ScheduleField(this, (FieldType)type, (day, lesson)) {
                     Location = new Point(0, fieldSize.Height * type),
                     Size = fieldSize
                 };
@@ -131,13 +135,9 @@ namespace Timetabled {
 
         #region Date & Setting Schedule 
 
-        DateTime datePrevious;
-        DateTime dateLatest;
+        public State<DateTime> Dates { get; private set; }
+        public State<string> Groups { get; private set; }
 
-        private void RefreshDates() {
-            datePrevious = dateLatest;
-            dateLatest = Calendar.SelectionStart;
-        }
         private void SelectEntireWeek() {
             Calendar.DateChanged -= Calendar_DateChanged;
 
@@ -159,45 +159,28 @@ namespace Timetabled {
 
             SelectEntireWeek();
 
-            datePrevious = Calendar.SelectionStart;
-            dateLatest = Calendar.SelectionStart;
+            Dates = new State<DateTime>(() => Calendar.SelectionStart);
+            Groups = new State<string>(() => GroupField.Text);
         }
 
+        private void GroupField_TextChanged(object sender, EventArgs e) {
+            if (scheduleLoaded && Storage.Data["Группа"].Contains(GroupField.Text)) {
+                Groups.Update();
+                UnloadSchedule(Dates.Previous, Groups.Previous);
+                LoadSchedule();
+            }
+        }
         private void Calendar_DateChanged(object sender, DateRangeEventArgs e) {
             SelectEntireWeek();
-            RefreshDates();
+            Dates.Update();
 
-            var group = GroupField.Text;
             if (scheduleLoaded) {
-                SaveSchedule(datePrevious, group);
-                LoadSchedule(dateLatest, group);
+                UnloadSchedule(Dates.Previous, Groups.Latest);
+                LoadSchedule();
             }
         }
-
-        public void LoadSchedule(DateTime date, string group) {
-            var classes = Storage.Schedules;
-            for (int day = 0; day < groupCount; day++) {
-                var curDate = date.AddDays(day);
-
-                bool hasDate = classes.ContainsKey(curDate);
-                bool hasGroup = false;
-                var groupLessons = new Dictionary<string, Lesson[]>();
-                var lessons = new Lesson[6];
-
-                if (hasDate) {
-                    groupLessons = classes[curDate];
-                    hasGroup = classes[curDate].ContainsKey(group);
-                }
-
-                for (int lesson = 0; lesson < groupCount; lesson++) {
-                    for (int type = 0; type < fieldCount; type++) {
-                        string text = hasGroup ? groupLessons[group][lesson][type] : "";
-                        AllFields[day, lesson, type].Text = text;
-                    }
-                }
-            }
-        }
-        public void SaveSchedule(DateTime date, string group) {
+        
+        public void UnloadSchedule(DateTime date, string group) {
             var classes = Storage.Schedules;
             for (int dayIndex = 0; dayIndex < groupCount; dayIndex++) {
                 var curDate = date.AddDays(dayIndex);
@@ -229,6 +212,29 @@ namespace Timetabled {
                 else classes[curDate] = groupLessons;
             }
         }
+        public void LoadSchedule() {
+            var classes = Storage.Schedules;
+            for (int day = 0; day < groupCount; day++) {
+                var curDate = Dates.Latest.AddDays(day);
+
+                bool hasDate = classes.ContainsKey(curDate);
+                bool hasGroup = false;
+                var groupLessons = new Dictionary<string, Lesson[]>();
+                var lessons = new Lesson[6];
+
+                if (hasDate) {
+                    groupLessons = classes[curDate];
+                    hasGroup = classes[curDate].ContainsKey(Groups.Latest);
+                }
+
+                for (int lesson = 0; lesson < groupCount; lesson++) {
+                    for (int type = 0; type < fieldCount; type++) {
+                        string text = hasGroup ? groupLessons[Groups.Latest][lesson][type] : "";
+                        AllFields[day, lesson, type].Text = text;
+                    }
+                }
+            }
+        }
 
         #endregion
     }
@@ -251,17 +257,16 @@ namespace Timetabled {
 
             SelectItem.SelectedIndex = 0;
 
-            previous = SelectItem.SelectedItem.ToString();
-            last = SelectItem.SelectedItem.ToString();
+            selected = new State<string>(() => SelectItem.SelectedItem.ToString());
 
             Load();
-            SelectItem.SelectedIndexChanged += OnIndexChange;
+            SelectItem.SelectedIndexChanged += OnIndexChange;            
         }
 
         private void OnIndexChange(object sender, EventArgs e) {
             SelectItem.SelectedIndexChanged -= OnIndexChange;
 
-            Refresh();
+            selected.Update();
             Unload();
             Load();
 
@@ -270,35 +275,28 @@ namespace Timetabled {
 
         public DataGridView DataGrid { get; private set; }
         public ListBox SelectItem { get; private set; }
-        private DataGridViewColumn Column => DataGrid.Columns[0];
-
+        private DataGridViewColumn Header => DataGrid.Columns[0];
 
         #region Mess
 
-        string previous;
-        string last;
-
-        void Refresh() {
-            previous = last;
-            last = SelectItem.SelectedItem.ToString();
-        }
+        State<string> selected;
 
         private void Load() {
-            Column.HeaderText = last;
-            var list = Storage.Data[last];
+            Header.HeaderText = selected.Latest;
+            var unloadFrom = Storage.Data[selected.Latest];
 
             DataGrid.Rows.Clear();
-            foreach (var i in list) {
+            foreach (var i in unloadFrom) {
                 DataGrid.Rows.Add(i);
             }
         }
         private void Unload() {
-            var list = Storage.Data[previous];
+            var loadTo = Storage.Data[selected.Previous];
 
-            list.Clear();
+            loadTo.Clear();
             for (int i = 0; i < DataGrid.RowCount-1; i++) {
-                var value = DataGrid.Rows[i].Cells[0].Value;                
-                if (value != null) list.Add(value.ToString());
+                var value = DataGrid[0, i].Value;            
+                if (value != null) loadTo.Add(value.ToString());
             }
         }
 

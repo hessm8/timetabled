@@ -5,9 +5,10 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Timetabled.Helpers;
 
 namespace Timetabled {
-    public class DataField : ComboBox {
+    public class ScheduleField : ComboBox {
         // Gui access
         private MainGui GuiManager { get; }
         private Storage Storage => GuiManager.Storage;
@@ -19,7 +20,7 @@ namespace Timetabled {
         private string CategoryName { get; }
         public (int day, int lesson) Position { get; }
 
-        public DataField(MainGui _guiManager, FieldType _type, (int day, int lesson) _pos) {
+        public ScheduleField(MainGui _guiManager, FieldType _type, (int day, int lesson) _pos) {
             GuiManager = _guiManager;
             Type = _type;
             Position = _pos;
@@ -29,7 +30,7 @@ namespace Timetabled {
 
             SubscribeActions();
         }
-        public DataField(MainGui _guiManager) {
+        public ScheduleField(MainGui _guiManager) {
             GuiManager = _guiManager;
             Type = FieldType.Group;
 
@@ -37,6 +38,15 @@ namespace Timetabled {
             Category = Storage.Data[CategoryName];        
 
             SubscribeActions();
+        }
+
+        private DateTime Date => GuiManager.Calendar.SelectionStart.AddDays(Position.day);    
+        private bool ItemAvailable(string item) {
+            foreach (var group in Storage.Schedules[Date]) {
+                var lesson = group.Value[Position.lesson];
+                if (lesson[(int)Type] == item) return false;
+            }
+            return Text == item;
         }
 
         public void SubscribeActions() {
@@ -51,7 +61,11 @@ namespace Timetabled {
         // Subscribed actions
         private void DataField_DropDown(object sender, EventArgs e) {
             Items.Clear();
-            Items.AddRange(Category.ToArray());
+            if (Type == FieldType.Teacher || Type == FieldType.Room) {
+                foreach (var item in Category) {
+                    if (ItemAvailable(item)) Items.Add(item);
+                }
+            } else Items.AddRange(Category.ToArray());
         }
         private void DataField_KeyDown(object sender, KeyEventArgs e) {            
             switch (e.KeyCode) {
@@ -61,7 +75,7 @@ namespace Timetabled {
                         // Based on input
                         Text = Category.Find(t => t.ToLower()
                         .Contains(Text.ToLower())) ?? Text;
-                    } else {
+                    } else if (Category.Count > 0) {
                         // On random
                         var randomIndex = new Random().Next(Category.Count);
                         Text = Category[randomIndex];

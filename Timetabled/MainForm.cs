@@ -29,7 +29,7 @@ namespace Timetabled {
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
-            gui.SaveSchedule(SelectDate.SelectionStart, gui.GroupField.Text);
+            gui.UnloadSchedule(gui.Dates.Latest, gui.Groups.Latest);
             storage.Unload();
         }
 
