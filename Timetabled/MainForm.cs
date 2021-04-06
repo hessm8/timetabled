@@ -53,7 +53,7 @@ namespace Timetabled {
             var date = SelectDate.SelectionStart;
             var serializedString = storage.SerializeOnDate(date);
 
-            var file = "viewer.html";
+            var file = "lib\\viewer.html";
             var args = "?schedule=" + Uri.EscapeDataString(serializedString)
                 + "&date=" + date.ToShortDateString();
 
