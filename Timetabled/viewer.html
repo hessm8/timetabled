@@ -75,9 +75,9 @@
 						teacher = document.createElement("div"),
 						room = document.createElement("div");
 					
-					subject.innerText = lesson.subject;
-					teacher.innerText = lesson.teacher;
-					room.innerText = lesson.room;
+					subject.innerText = lesson.subject || "\n";
+					teacher.innerText = lesson.teacher || "\n";
+					room.innerText = lesson.room || "\n";
 					
 					column.appendChild(subject);
 					column.appendChild(teacher);
