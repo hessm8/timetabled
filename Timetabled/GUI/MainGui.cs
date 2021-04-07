@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using Timetabled.Helpers;
 using Timetabled.Data;
+using System.IO;
 
 namespace Timetabled.GUI {
     public class MainGui : GuiManager {
@@ -209,7 +210,10 @@ namespace Timetabled.GUI {
                 Storage.Settings.CheckDefaultBrowser(file);
             }
 
-            Process.Start(Storage.Settings.DefaultBrowser, file + args);
+            var fullPath = new FileInfo(file).FullName;
+            var fileURL = new Uri(fullPath).AbsoluteUri;
+
+            Process.Start(Storage.Settings.DefaultBrowser, fileURL + args);
         }
 
         #endregion

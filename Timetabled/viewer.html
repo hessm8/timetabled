@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en-ca">
+	<head>
+		<title>Расписание</title>
+		
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<style>
+			body {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+				min-height: 100vh;
+				padding: 0;
+				margin: 0;
+				font-size: 14pt;
+			}
+			
+			.date {
+				position: fixed;
+				top: 0;
+				left: 0;
+				margin: 0.5em;
+				font-weight: bold;
+			}
+			
+			.group {
+				width: 20em;
+				margin: 1em;
+				text-align: center;
+			}
+			
+			.group > table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			
+			.group > table td {
+				border: solid 1px #000000;
+			}
+		</style>
+		
+		<script type="module">
+			function displayDate(date) {
+				const container = document.createElement("div");
+				
+				container.className = "date";
+				
+				container.innerText = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+				
+				document.body.appendChild(container);
+			}
+			
+			function displayGroup(name, lessons) {
+				const container = document.createElement("div");
+				
+				container.className = "group";
+				
+				const heading = document.createElement("h2");
+				
+				heading.innerText = name;
+				
+				const table = document.createElement("table");
+				
+				for (const lesson of lessons) {
+					const
+						row = document.createElement("tr"),
+						column = document.createElement("td"),
+						
+						subject = document.createElement("div"),
+						teacher = document.createElement("div"),
+						room = document.createElement("div");
+					
+					subject.innerText = lesson.subject;
+					teacher.innerText = lesson.teacher;
+					room.innerText = lesson.room;
+					
+					column.appendChild(subject);
+					column.appendChild(teacher);
+					column.appendChild(room);
+					row.appendChild(column);
+					table.appendChild(row);
+				}
+				
+				container.appendChild(heading);
+				container.appendChild(table);
+				document.body.appendChild(container);
+			}
+			
+			try {
+				const
+					params = new URLSearchParams(window.location.search),
+					
+					scheduleText = params.get("schedule"),
+					dateText = params.get("date");
+				
+				if (dateText) {
+					const date = new Date(dateText);
+					
+					if (isNaN(date.valueOf())) {
+						throw new Error("invalid date");
+					}
+					
+					displayDate(date);
+				}
+				
+				if (!scheduleText) {
+					throw new Error("schedule must be provided");
+				}
+				
+				const schedule = JSON.parse(scheduleText);
+				
+				for (const group of Object.keys(schedule)) {
+					displayGroup(group, schedule[group]);
+				}
+			} catch (error) {
+				const text = document.createElement("p");
+				
+				text.innerText = "Error: " + error.message;
+				
+				document.body.appendChild(text);
+			}
+		</script>
+	</head>
+	
+	<body>
+		
+	</body>
+</html>
