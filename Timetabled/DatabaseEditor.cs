@@ -30,5 +30,15 @@ namespace Timetabled {
         private void AddDataSelect_SelectedIndexChanged(object sender, EventArgs e) {
 
         }
+
+        private void AcceptChangesButton_Click(object sender, EventArgs e) {
+            gui.UnloadCategory(gui.Selected.Latest);
+            gui.UnloadToStorage();
+        }
+
+        private void CancelChangesButton_Click(object sender, EventArgs e) {
+            gui.LoadFromStorage();
+            gui.LoadNewCategory();
+        }
     }
 }

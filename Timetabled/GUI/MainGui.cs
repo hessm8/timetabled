@@ -31,7 +31,7 @@ namespace Timetabled.GUI {
 
             Calendar.DateChanged += OnDateChange;
             GroupField.TextChanged += OnGroupChange;
-            Calendar.MouseDown += Calendar_MouseDown;
+            //Calendar.MouseDown += Calendar_MouseDown;
         }
 
         private void Calendar_MouseDown(object sender, MouseEventArgs e) {

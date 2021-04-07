@@ -4,18 +4,21 @@ using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
+using GroupToLessons = System.Collections.Generic
+    .Dictionary<string, Timetabled.Data.Lesson[]>;
+
 namespace Timetabled.Data {
     public class Storage {        
         public Storage() {
             Data = new ScheduleData();
             Settings = new AppSettings();
-            Schedules = new Dictionary<DateTime, Dictionary<string, Lesson[]>>();
+            Schedules = new Dictionary<DateTime, GroupToLessons>();
         }
 
         // Stored items
         public ScheduleData Data { get; set; }
         public AppSettings Settings { get; set; }
-        public Dictionary<DateTime, Dictionary<string, Lesson[]>> Schedules { get; set; }
+        public Dictionary<DateTime, GroupToLessons> Schedules { get; set; }
 
         // JSON Convertation
         public static JsonSerializerSettings JsonSettings => new JsonSerializerSettings {            
@@ -39,7 +42,7 @@ namespace Timetabled.Data {
                 if (File.Exists(SchedulesFilepath)) {
                     serializedData = File.ReadAllText(SchedulesFilepath);
                     if (new FileInfo(SchedulesFilepath).Length != 0) {
-                        Schedules = (Dictionary<DateTime, Dictionary<string, Lesson[]>>)JsonConvert
+                        Schedules = (Dictionary<DateTime, GroupToLessons>)JsonConvert
                             .DeserializeObject(serializedData, Schedules.GetType(), JsonSettings);
                     }
                 }

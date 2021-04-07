@@ -42,11 +42,26 @@ namespace Timetabled.GUI {
         }
 
         private DateTime Date => GuiManager.Calendar.SelectionStart.AddDays(Position.day);    
+
+        /// <summary>
+        /// Checks if current item from dropdown list is available across groups
+        /// </summary>
+        /// <param name="item">Item from dropdown list of this ScheduleField</param>
+        /// <returns>True if other groups don't have this item chosen</returns>
         private bool ItemAvailable(string item) {
             if (Storage.Schedules.ContainsKey(Date)) {
+                // All other groups on the current date
                 foreach (var group in Storage.Schedules[Date]) {
-                    var lesson = group.Value[Position.lesson];
-                    if (lesson[(int)Type] == item) return Text == item;
+                    var curGroup = GuiManager.GroupField;
+                    if (group.Key == curGroup.Text) continue;
+                    
+                    var lessons = group.Value;
+                    // If current group has a lesson on the date
+                    if (Position.lesson < lessons.Length) {
+                        var lesson = lessons[Position.lesson];
+                        var otherGroupItem = lesson[(int)Type];
+                        if (otherGroupItem == item) return false;
+                    }
                 }
             }
             return true;

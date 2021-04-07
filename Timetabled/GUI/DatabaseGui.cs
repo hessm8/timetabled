@@ -15,58 +15,72 @@ namespace Timetabled.GUI {
             : base(_control, _storage) { }
         public override void Initialize() {
             DataGrid = new DataGridView() {
-                Location = new Point(70, 20),
+                Location = new Point(102, 10),
                 AllowUserToDeleteRows = true,
                 AllowUserToAddRows = true,
                 AllowUserToResizeColumns = false,
                 AllowUserToResizeRows = false
             };
-            DataGrid.Columns.Add("Datagrid1", " ");
+            DataGrid.Columns.Add("Header", " ");
             Controls.Add(DataGrid);
 
-            SelectItem = Access<ListBox>("AddDataSelect");
+            SelectList = Access<ListBox>("AddDataSelect");
+            SelectList.SelectedIndex = 0;
 
+            Selected = new State<string>(() => SelectList.SelectedItem.ToString());
 
-            SelectItem.SelectedIndex = 0;
+            EditedData = new ScheduleData();
+            LoadFromStorage();
+            LoadNewCategory();
 
-            selected = new State<string>(() => SelectItem.SelectedItem.ToString());
-
-            LoadCategoryData();
-            SelectItem.SelectedIndexChanged += OnIndexChange;
+            SelectList.SelectedIndexChanged += OnIndexChange;
         }
 
         private void OnIndexChange(object sender, EventArgs e) {
-            SelectItem.SelectedIndexChanged -= OnIndexChange;
-
-            selected.Update();
-            if (Storage.Settings.AutosaveOnCategoryChange) LoadCategoryData();
-
-            SelectItem.SelectedIndexChanged += OnIndexChange;
+            Selected.Update();                      
+            UnloadCategory(Selected.Previous);
+            LoadNewCategory();
         }
 
         public DataGridView DataGrid { get; private set; }
-        public ListBox SelectItem { get; private set; }
+        public ListBox SelectList { get; private set; }
         private DataGridViewColumn Header => DataGrid.Columns[0];
 
-        public ScheduleData ScheduleData { get; private set; }
+        public ScheduleData EditedData { get; private set; }
+        public State<string> Selected { get; private set; }
 
-        #region Mess
+        #region Loading Data
 
-        State<string> selected;
-
-        private void LoadCategoryData() {
-            Header.HeaderText = selected.Latest;
-            var unloadFrom = Storage.Data[selected.Latest];
-
+        public void LoadFromStorage() {            
+            for (int listIndex = 0; listIndex < 4; listIndex++) {
+                EditedData[listIndex].Clear();
+                foreach (var i in Storage.Data[listIndex]) {
+                    EditedData[listIndex].Add(i);
+                }
+            }
+        }
+        public void UnloadToStorage() {
+            for (int listIndex = 0; listIndex < 4; listIndex++) {
+                Storage.Data[listIndex].Clear();
+                foreach (var i in EditedData[listIndex]) {
+                    Storage.Data[listIndex].Add(i);
+                }
+            }
+        }
+        public void LoadNewCategory() {
+            // Update header when loading
+            Header.HeaderText = Selected.Latest;
+            
+            var unloadFrom = EditedData[Selected.Latest];
+            // Load to the datagrid view
             DataGrid.Rows.Clear();
             foreach (var i in unloadFrom) {
                 DataGrid.Rows.Add(i);
             }
         }
-
-        private void UnloadCategoryData() {
-            var loadTo = Storage.Data[selected.Previous];
-
+        public void UnloadCategory(string category) {
+            var loadTo = EditedData[category];
+            // Load to local storage
             loadTo.Clear();
             for (int i = 0; i < DataGrid.RowCount - 1; i++) {
                 var value = DataGrid[0, i].Value;

@@ -27,7 +27,7 @@ namespace Timetabled {
             gui = new MainGui(Controls, storage);
             AddDataSelect.SelectedIndex = 0;
 
-            OpenDatabase(sender, e);
+            //OpenDatabase(sender, e);
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
