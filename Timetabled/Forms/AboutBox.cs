@@ -93,6 +93,7 @@ namespace Timetabled.Forms {
 
         private void logoPictureBox_Click(object sender, EventArgs e) {
             easterEgg.Play();
+            MessageBox.Show("Credits:\nkirby - schedule viewer module\nduck - app icon");
         }
     }
 }
