@@ -1,5 +1,5 @@
 ﻿
-namespace Timetabled {
+namespace Timetabled.Forms {
     partial class DatabaseEditor {
         /// <summary>
         /// Required designer variable.
@@ -68,7 +68,7 @@ namespace Timetabled {
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 643);
+            this.ClientSize = new System.Drawing.Size(582, 267);
             this.Controls.Add(this.CancelChangesButton);
             this.Controls.Add(this.AcceptChangesButton);
             this.Controls.Add(this.AddDataSelect);

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using Timetabled.Data;
 using Timetabled.GUI;
 
-namespace Timetabled {
+namespace Timetabled.Forms {
     public partial class DatabaseEditor : Form {
         Storage storage;
         DatabaseGui gui;

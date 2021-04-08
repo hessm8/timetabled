@@ -13,7 +13,7 @@ using System.Web;
 using Timetabled.Data;
 using Timetabled.GUI;
 
-namespace Timetabled {
+namespace Timetabled.Forms {
     public partial class MainForm : Form {
         Storage storage;
         MainGui gui;
@@ -25,9 +25,6 @@ namespace Timetabled {
         private void Form_OnLoad(object sender, EventArgs e) {
             storage.Load();
             gui = new MainGui(Controls, storage);
-            AddDataSelect.SelectedIndex = 0;
-
-            //OpenDatabase(sender, e);
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
@@ -35,22 +32,10 @@ namespace Timetabled {
             storage.Unload();
         }
 
-        private void AddDataButton_Click(object sender, EventArgs e) {
-            var category = storage.Data[AddDataSelect.SelectedItem.ToString()];
-            var text = AddDataText.Text;
-
-            if (text.Length == 0) {
-                MessageBox.Show("Введите данные", "Подсказка");
-                return;
-            }
-
-            if (!category.Contains(text)) {
-                category.Add(text);
-            } else MessageBox.Show("Данный элемент уже есть в списке", "Ошибка данных");
-        }
-
         private void DisplayScheduleButton_Click(object sender, EventArgs e) {
-            gui.OpenSchedule();
+            var openForm = new OpenScheduleDialog(storage, gui);
+            openForm.ShowDialog();
+            
         }
 
         private void OpenDatabase(object sender, EventArgs e) {

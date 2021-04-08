@@ -9,6 +9,7 @@ using System.Globalization;
 using Timetabled.Helpers;
 using Timetabled.Data;
 using System.IO;
+using Timetabled.Forms;
 
 namespace Timetabled.GUI {
     public class MainGui : GuiManager {
@@ -196,11 +197,15 @@ namespace Timetabled.GUI {
                 }
             }
         }
-        public void OpenSchedule() {
+        public bool OpenSchedule(int dayOfweek) {
             UnloadSchedule(Dates.Latest, Groups.Latest);
-            var serializedString = Storage.SerializeOnDate(Dates.Latest);
+            var selectedDate = Dates.Latest.AddDays(dayOfweek);
+            var serializedString = Storage.SerializeOnDate(selectedDate);
 
-            if (serializedString == null) return;
+            if (serializedString == null) {
+                var msg = MessageBox.Show("Расписание на выбранную дату не заполнено", "Ошибка");
+                return false;
+            }
 
             var file = "lib\\viewer.html";
             var args = "?schedule=" + Uri.EscapeDataString(serializedString)
@@ -213,7 +218,12 @@ namespace Timetabled.GUI {
             var fullPath = new FileInfo(file).FullName;
             var fileURL = new Uri(fullPath).AbsoluteUri;
 
-            Process.Start(Storage.Settings.DefaultBrowser, fileURL + args);
+            var link = fileURL + args;
+            if (ScheduleViewer.WebViewIsInstalled()) {
+                var viewer = new ScheduleViewer(link);
+            } else Process.Start(Storage.Settings.DefaultBrowser, link);
+
+            return true;
         }
 
         #endregion
