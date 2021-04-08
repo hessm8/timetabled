@@ -15,6 +15,9 @@ namespace Timetabled.GUI {
     public class MainGui : GuiManager {
         public override void Initialize() {
             Calendar = Access<MonthCalendar>("SelectDate");
+            var testLoc = Access<Control>("TestLoc");
+            scheduleOffset = testLoc.Location;
+            testLoc.Dispose();
 
             GroupField = new ScheduleField(this) {
                 Location = new Point(25, 391),
@@ -54,7 +57,8 @@ namespace Timetabled.GUI {
         const int fieldCount = 3;
         const int groupCount = 6;
         private readonly Size fieldSize = new Size(150, 20);
-        private readonly Point scheduleOffset = new Point(300, 20);
+        //private readonly Point scheduleOffset = new Point(300, 20);
+        private Point scheduleOffset { get; set; }
 
         #endregion
 

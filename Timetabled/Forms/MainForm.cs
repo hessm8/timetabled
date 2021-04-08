@@ -12,6 +12,8 @@ using System.Globalization;
 using System.Web;
 using Timetabled.Data;
 using Timetabled.GUI;
+using System.Media;
+using System.IO;
 
 namespace Timetabled.Forms {
     public partial class MainForm : Form {
@@ -20,6 +22,9 @@ namespace Timetabled.Forms {
         public MainForm() {
             InitializeComponent();
             storage = new Storage();
+
+            ViewScheduleMenuItem.Click += ViewSchedule;
+            EditDataMenuItem.Click += OpenDatabase;
         }
 
         private void Form_OnLoad(object sender, EventArgs e) {
@@ -32,7 +37,7 @@ namespace Timetabled.Forms {
             storage.Unload();
         }
 
-        private void DisplayScheduleButton_Click(object sender, EventArgs e) {
+        private void ViewSchedule(object sender, EventArgs e) {
             var openForm = new OpenScheduleDialog(storage, gui);
             openForm.ShowDialog();
             
@@ -41,6 +46,10 @@ namespace Timetabled.Forms {
         private void OpenDatabase(object sender, EventArgs e) {
             var dbManager = new DatabaseEditor(storage);
             dbManager.Show();
+        }
+
+        private void HelpMenuItem_Click(object sender, EventArgs e) {
+            new AboutBox().Show();
         }
     }
 }

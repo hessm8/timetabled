@@ -24,6 +24,7 @@ namespace Timetabled.Forms {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScheduleViewer));
             this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
             this.PrintButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
@@ -57,10 +58,11 @@ namespace Timetabled.Forms {
             this.ClientSize = new System.Drawing.Size(804, 574);
             this.Controls.Add(this.PrintButton);
             this.Controls.Add(this.webView);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(2000, 2000);
             this.MinimumSize = new System.Drawing.Size(350, 550);
             this.Name = "ScheduleViewer";
-            this.Text = "ScheduleViewer";
+            this.Text = "Schedule Viewer";
             this.Resize += new System.EventHandler(this.ScheduleViewer_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
             this.ResumeLayout(false);

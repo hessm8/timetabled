@@ -24,6 +24,7 @@ namespace Timetabled.Forms {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DatabaseEditor));
             this.AddDataSelect = new System.Windows.Forms.ListBox();
             this.AcceptChangesButton = new System.Windows.Forms.Button();
             this.CancelChangesButton = new System.Windows.Forms.Button();
@@ -32,23 +33,24 @@ namespace Timetabled.Forms {
             // AddDataSelect
             // 
             this.AddDataSelect.FormattingEnabled = true;
-            this.AddDataSelect.ItemHeight = 16;
             this.AddDataSelect.Items.AddRange(new object[] {
             "Дисциплина",
             "Преподаватель",
             "Аудитория",
             "Группа"});
-            this.AddDataSelect.Location = new System.Drawing.Point(12, 12);
+            this.AddDataSelect.Location = new System.Drawing.Point(9, 10);
+            this.AddDataSelect.Margin = new System.Windows.Forms.Padding(2);
             this.AddDataSelect.Name = "AddDataSelect";
-            this.AddDataSelect.Size = new System.Drawing.Size(111, 68);
+            this.AddDataSelect.Size = new System.Drawing.Size(84, 56);
             this.AddDataSelect.TabIndex = 22;
             this.AddDataSelect.SelectedIndexChanged += new System.EventHandler(this.AddDataSelect_SelectedIndexChanged);
             // 
             // AcceptChangesButton
             // 
-            this.AcceptChangesButton.Location = new System.Drawing.Point(12, 86);
+            this.AcceptChangesButton.Location = new System.Drawing.Point(9, 70);
+            this.AcceptChangesButton.Margin = new System.Windows.Forms.Padding(2);
             this.AcceptChangesButton.Name = "AcceptChangesButton";
-            this.AcceptChangesButton.Size = new System.Drawing.Size(111, 29);
+            this.AcceptChangesButton.Size = new System.Drawing.Size(83, 24);
             this.AcceptChangesButton.TabIndex = 23;
             this.AcceptChangesButton.Text = "Применить";
             this.AcceptChangesButton.UseVisualStyleBackColor = true;
@@ -56,9 +58,10 @@ namespace Timetabled.Forms {
             // 
             // CancelChangesButton
             // 
-            this.CancelChangesButton.Location = new System.Drawing.Point(12, 121);
+            this.CancelChangesButton.Location = new System.Drawing.Point(9, 98);
+            this.CancelChangesButton.Margin = new System.Windows.Forms.Padding(2);
             this.CancelChangesButton.Name = "CancelChangesButton";
-            this.CancelChangesButton.Size = new System.Drawing.Size(111, 29);
+            this.CancelChangesButton.Size = new System.Drawing.Size(83, 24);
             this.CancelChangesButton.TabIndex = 24;
             this.CancelChangesButton.Text = "Отменить";
             this.CancelChangesButton.UseVisualStyleBackColor = true;
@@ -66,14 +69,17 @@ namespace Timetabled.Forms {
             // 
             // DatabaseEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(582, 267);
+            this.ClientSize = new System.Drawing.Size(436, 217);
             this.Controls.Add(this.CancelChangesButton);
             this.Controls.Add(this.AcceptChangesButton);
             this.Controls.Add(this.AddDataSelect);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "DatabaseEditor";
-            this.Text = "DatabaseManager";
+            this.Opacity = 0.95D;
+            this.Text = "Data Editor";
             this.Load += new System.EventHandler(this.DatabaseManager_Load);
             this.ResumeLayout(false);
 

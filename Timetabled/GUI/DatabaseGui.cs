@@ -19,7 +19,8 @@ namespace Timetabled.GUI {
                 AllowUserToDeleteRows = true,
                 AllowUserToAddRows = true,
                 AllowUserToResizeColumns = false,
-                AllowUserToResizeRows = false
+                AllowUserToResizeRows = false,
+                RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing
             };
             DataGrid.Columns.Add("Header", " ");
             Controls.Add(DataGrid);
