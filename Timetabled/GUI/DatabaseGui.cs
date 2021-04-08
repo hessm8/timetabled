@@ -24,9 +24,13 @@ namespace Timetabled.GUI {
                 AllowUserToResizeRows = false,
                 RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing
             };
-            if (test) DataGrid.Size = testGrid.Size;
+            if (test) {
+                DataGrid.Size = testGrid.Size;
+            }           
             testGrid.Dispose();
+
             DataGrid.Columns.Add("Header", " ");
+            Header.Width = 184;
             Controls.Add(DataGrid);
 
             SelectList = Access<ListBox>("AddDataSelect");
