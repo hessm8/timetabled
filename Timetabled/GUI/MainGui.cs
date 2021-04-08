@@ -19,10 +19,13 @@ namespace Timetabled.GUI {
             scheduleOffset = testLoc.Location;
             testLoc.Dispose();
 
+            var placeholderGroup = Access<ComboBox>("placeholderGroup");
             GroupField = new ScheduleField(this) {
-                Location = new Point(25, 391),
-                Size = new Size(200, 25),
+                Location = placeholderGroup.Location,
+                Size = placeholderGroup.Size
             };
+            placeholderGroup.Dispose();
+
             if (Storage.Data["Группа"].Count > 0) {
                 GroupField.Text = Storage.Data["Группа"][0];
             }
@@ -33,18 +36,53 @@ namespace Timetabled.GUI {
             Dates = new State<DateTime>(() => Calendar.SelectionStart);
             Groups = new State<string>(() => GroupField.Text);
 
+            var start = Calendar.Location;
+            var arrowSize = new Size(21, 25);
+            Controls.Add(leftArrow = new Button() {
+                Location = start,
+                Size = arrowSize,                
+                Text = "◀"                
+            });
+            Controls.Add(rightArrow = new Button() {
+                Location = new Point(start.X + 205, start.Y),
+                Size = arrowSize,
+                Text = "▶"
+            });
+
+            leftArrow.BringToFront();
+            rightArrow.BringToFront();
+
+            leftArrow.Click += LeftArrow_Click;
+            rightArrow.Click += RightArrow_Click;
+
+            
             Calendar.DateChanged += OnDateChange;
             GroupField.TextChanged += OnGroupChange;
             //Calendar.MouseDown += Calendar_MouseDown;
         }
 
-        private void Calendar_MouseDown(object sender, MouseEventArgs e) {
-            // Use to cancel DateChanged thing
-            if (e.Y < 24) {
-                if (e.X < 20) { } //Left arrow
-                else if (e.X > 205) { } // Right arrow
-            }
+        private void RightArrow_Click(object sender, EventArgs e) {
+            Calendar.SelectionStart = Dates.Latest.AddDays(7);
+            SelectEntireWeek();
         }
+
+        private void LeftArrow_Click(object sender, EventArgs e) {
+            Calendar.SelectionStart = Dates.Latest.AddDays(-7);
+            SelectEntireWeek();
+        }
+
+        Button rightArrow;
+        Button leftArrow;
+
+        //private void Calendar_MouseDown(object sender, MouseEventArgs e) {
+        //    // Use to cancel DateChanged thing
+        //    if (e.Y < 24) {
+        //        Calendar.DateChanged -= OnDateChange;
+        //        if (e.X < 20) { } //Left arrow
+        //        else if (e.X > 205) { } // Right arrow
+        //        else { } // middle
+        //    }
+        //}
 
         public MainGui(Control.ControlCollection _control, Storage _storage)
             : base(_control, _storage) {
@@ -272,6 +310,7 @@ namespace Timetabled.GUI {
         }
         private void OnDateChange(object sender, DateRangeEventArgs e) {
             SelectEntireWeek();
+
             Dates.Update();
 
             if (scheduleLoaded && Groups.Latest != "") {

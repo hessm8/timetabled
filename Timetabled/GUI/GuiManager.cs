@@ -18,8 +18,9 @@ namespace Timetabled.GUI {
             Initialize();
         }
         protected TControl Access<TControl>(string name) where TControl : Control {
-            var control = Controls.Find(name, false)[0];
-            return control is TControl ? (TControl)control : null;
+            var controls = Controls.Find(name, false);
+            if (controls.Length > 0) return (TControl)controls[0];
+            return null;
         }
 
         // Acessors

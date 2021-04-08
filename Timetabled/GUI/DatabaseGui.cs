@@ -14,14 +14,18 @@ namespace Timetabled.GUI {
         public DatabaseGui(Control.ControlCollection _control, Storage _storage)
             : base(_control, _storage) { }
         public override void Initialize() {
+            var testGrid = Access<DataGridView>("testGrid");
+            bool test = testGrid != null;
             DataGrid = new DataGridView() {
-                Location = new Point(102, 10),
+                Location = test ? testGrid.Location : new Point(102, 10),                
                 AllowUserToDeleteRows = true,
                 AllowUserToAddRows = true,
                 AllowUserToResizeColumns = false,
                 AllowUserToResizeRows = false,
                 RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing
             };
+            if (test) DataGrid.Size = testGrid.Size;
+            testGrid.Dispose();
             DataGrid.Columns.Add("Header", " ");
             Controls.Add(DataGrid);
 

@@ -28,6 +28,8 @@ namespace Timetabled.Forms {
             this.AddDataSelect = new System.Windows.Forms.ListBox();
             this.AcceptChangesButton = new System.Windows.Forms.Button();
             this.CancelChangesButton = new System.Windows.Forms.Button();
+            this.testGrid = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.testGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // AddDataSelect
@@ -41,16 +43,16 @@ namespace Timetabled.Forms {
             this.AddDataSelect.Location = new System.Drawing.Point(9, 10);
             this.AddDataSelect.Margin = new System.Windows.Forms.Padding(2);
             this.AddDataSelect.Name = "AddDataSelect";
-            this.AddDataSelect.Size = new System.Drawing.Size(84, 56);
+            this.AddDataSelect.Size = new System.Drawing.Size(90, 56);
             this.AddDataSelect.TabIndex = 22;
             this.AddDataSelect.SelectedIndexChanged += new System.EventHandler(this.AddDataSelect_SelectedIndexChanged);
             // 
             // AcceptChangesButton
             // 
-            this.AcceptChangesButton.Location = new System.Drawing.Point(9, 70);
+            this.AcceptChangesButton.Location = new System.Drawing.Point(103, 9);
             this.AcceptChangesButton.Margin = new System.Windows.Forms.Padding(2);
             this.AcceptChangesButton.Name = "AcceptChangesButton";
-            this.AcceptChangesButton.Size = new System.Drawing.Size(83, 24);
+            this.AcceptChangesButton.Size = new System.Drawing.Size(133, 26);
             this.AcceptChangesButton.TabIndex = 23;
             this.AcceptChangesButton.Text = "Применить";
             this.AcceptChangesButton.UseVisualStyleBackColor = true;
@@ -58,20 +60,29 @@ namespace Timetabled.Forms {
             // 
             // CancelChangesButton
             // 
-            this.CancelChangesButton.Location = new System.Drawing.Point(9, 98);
+            this.CancelChangesButton.Location = new System.Drawing.Point(103, 39);
             this.CancelChangesButton.Margin = new System.Windows.Forms.Padding(2);
             this.CancelChangesButton.Name = "CancelChangesButton";
-            this.CancelChangesButton.Size = new System.Drawing.Size(83, 24);
+            this.CancelChangesButton.Size = new System.Drawing.Size(133, 27);
             this.CancelChangesButton.TabIndex = 24;
             this.CancelChangesButton.Text = "Отменить";
             this.CancelChangesButton.UseVisualStyleBackColor = true;
             this.CancelChangesButton.Click += new System.EventHandler(this.CancelChangesButton_Click);
             // 
+            // testGrid
+            // 
+            this.testGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.testGrid.Location = new System.Drawing.Point(9, 71);
+            this.testGrid.Name = "testGrid";
+            this.testGrid.Size = new System.Drawing.Size(227, 384);
+            this.testGrid.TabIndex = 32;
+            // 
             // DatabaseEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(436, 217);
+            this.ClientSize = new System.Drawing.Size(250, 466);
+            this.Controls.Add(this.testGrid);
             this.Controls.Add(this.CancelChangesButton);
             this.Controls.Add(this.AcceptChangesButton);
             this.Controls.Add(this.AddDataSelect);
@@ -81,6 +92,7 @@ namespace Timetabled.Forms {
             this.Opacity = 0.95D;
             this.Text = "Data Editor";
             this.Load += new System.EventHandler(this.DatabaseManager_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.testGrid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -90,5 +102,6 @@ namespace Timetabled.Forms {
         private System.Windows.Forms.ListBox AddDataSelect;
         private System.Windows.Forms.Button AcceptChangesButton;
         private System.Windows.Forms.Button CancelChangesButton;
+        private System.Windows.Forms.DataGridView testGrid;
     }
 }
