@@ -42,9 +42,9 @@ namespace Timetabled.Forms {
             // 
             // PrintButton
             // 
-            this.PrintButton.Location = new System.Drawing.Point(570, 12);
+            this.PrintButton.Location = new System.Drawing.Point(583, 12);
             this.PrintButton.Name = "PrintButton";
-            this.PrintButton.Size = new System.Drawing.Size(166, 34);
+            this.PrintButton.Size = new System.Drawing.Size(153, 24);
             this.PrintButton.TabIndex = 1;
             this.PrintButton.Text = "Печать";
             this.PrintButton.UseVisualStyleBackColor = true;
@@ -54,9 +54,11 @@ namespace Timetabled.Forms {
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(804, 571);
+            this.ClientSize = new System.Drawing.Size(804, 574);
             this.Controls.Add(this.PrintButton);
             this.Controls.Add(this.webView);
+            this.MaximumSize = new System.Drawing.Size(2000, 2000);
+            this.MinimumSize = new System.Drawing.Size(350, 550);
             this.Name = "ScheduleViewer";
             this.Text = "ScheduleViewer";
             this.Resize += new System.EventHandler(this.ScheduleViewer_Resize);

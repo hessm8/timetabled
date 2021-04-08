@@ -23,7 +23,7 @@ namespace Timetabled.Forms {
         }
 
         async void InitializeAsync() {
-            await webView.EnsureCoreWebView2Async(null);
+            await webView.EnsureCoreWebView2Async();
             webView.CoreWebView2.Navigate(URL);
             Show();
         }

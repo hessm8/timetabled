@@ -24,6 +24,7 @@ namespace Timetabled.Forms {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.DisplayScheduleButton = new System.Windows.Forms.Button();
             this.SelectDate = new System.Windows.Forms.MonthCalendar();
             this.button1 = new System.Windows.Forms.Button();
@@ -32,7 +33,7 @@ namespace Timetabled.Forms {
             // DisplayScheduleButton
             // 
             this.DisplayScheduleButton.Location = new System.Drawing.Point(14, 186);
-            this.DisplayScheduleButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.DisplayScheduleButton.Margin = new System.Windows.Forms.Padding(2);
             this.DisplayScheduleButton.Name = "DisplayScheduleButton";
             this.DisplayScheduleButton.Size = new System.Drawing.Size(110, 37);
             this.DisplayScheduleButton.TabIndex = 22;
@@ -44,7 +45,7 @@ namespace Timetabled.Forms {
             // 
             this.SelectDate.FirstDayOfWeek = System.Windows.Forms.Day.Monday;
             this.SelectDate.Location = new System.Drawing.Point(14, 15);
-            this.SelectDate.Margin = new System.Windows.Forms.Padding(7, 7, 7, 7);
+            this.SelectDate.Margin = new System.Windows.Forms.Padding(7);
             this.SelectDate.MaxDate = new System.DateTime(2030, 12, 31, 0, 0, 0, 0);
             this.SelectDate.MinDate = new System.DateTime(2010, 1, 1, 0, 0, 0, 0);
             this.SelectDate.Name = "SelectDate";
@@ -53,7 +54,7 @@ namespace Timetabled.Forms {
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(128, 186);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(113, 37);
             this.button1.TabIndex = 25;
@@ -69,7 +70,8 @@ namespace Timetabled.Forms {
             this.Controls.Add(this.button1);
             this.Controls.Add(this.SelectDate);
             this.Controls.Add(this.DisplayScheduleButton);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.Text = "Timetabled";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_OnClosed);
