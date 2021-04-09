@@ -271,8 +271,22 @@ namespace Timetabled.GUI {
 
             var link = fileURL + args;
             if (!inBrowser) {
-                var viewer = new ScheduleViewer(link);
-            } else Process.Start(Storage.Settings.DefaultBrowser, link);
+                try {
+                    var viewer = new ScheduleViewer(link);
+                } catch {
+                    throw new Exception("Обнаружена проблема с окном просмотра. Попробуйте другую опцию.");
+                } finally {
+                    Storage.Unload();
+                }
+            } else {
+                try {
+                    Process.Start(Storage.Settings.DefaultBrowser, link);
+                } catch {
+                    throw new Exception("Обнаружена проблема с открытием расписания.");
+                } finally {
+                    Storage.Unload();
+                }                
+            }
 
             return true;
         }

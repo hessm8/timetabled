@@ -10,11 +10,15 @@ namespace Timetabled.Data {
         public string DefaultBrowser { get; set; }
         
         public void CheckDefaultBrowser(string testFilePath) {
-            var browser = Process.Start(new ProcessStartInfo(testFilePath) {
-                CreateNoWindow = true
-            });
-            DefaultBrowser = browser.ProcessName;
-            browser.Kill();
+            try {
+                var browser = Process.Start(new ProcessStartInfo(testFilePath) {
+                    CreateNoWindow = true
+                });
+                DefaultBrowser = browser.ProcessName;
+                browser.Kill();
+            } catch {
+                throw new Exception("Не удалось определить браузер по умолчанию");
+            }         
         }
     }
 }
