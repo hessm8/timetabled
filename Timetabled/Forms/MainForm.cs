@@ -97,5 +97,9 @@ namespace Timetabled.Forms {
             dbGui.LoadFromStorage();
             dbGui.LoadNewCategory();
         }
+
+        private void FillRandomData(object sender, EventArgs e) {
+            mainGui.FieldsAllRandom();
+        }
     }
 }

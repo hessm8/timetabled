@@ -48,8 +48,12 @@ namespace Timetabled.GUI {
         }
 
         private void DataGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
-            var cell = DataGrid[0, e.RowIndex];
-            cell.Value = CensorField(cell.Value.ToString());
+            try {
+                var cell = DataGrid[0, e.RowIndex];
+                cell.Value = CensorField(cell.Value.ToString());
+            } catch {
+                MessageBox.Show($"Info: {e.RowIndex} {DataGrid[0, e.RowIndex]} {DataGrid[0, e.RowIndex].Value}");
+            }
         }
 
         private void OnIndexChange(object sender, EventArgs e) {

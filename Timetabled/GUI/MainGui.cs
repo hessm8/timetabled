@@ -35,8 +35,8 @@ namespace Timetabled.GUI {
             Groups = new State<string>(() => GroupField.Text);
 
             var calSize = Calendar.Size;
-
-            if (Culture.Name == "ru-RU") {
+            
+            if (Region.Name == "ru-RU") {
                 Calendar.Location = new Point(Calendar.Location.X + Calendar.Size.Width / 5,
                     Calendar.Location.Y);
             }
@@ -309,6 +309,10 @@ namespace Timetabled.GUI {
 
         public void FieldsEnable(bool state) {
             foreach (var f in AllFields) f.Enabled = state;
+        }
+
+        public void FieldsAllRandom() {
+            foreach (var f in AllFields) f.FillRandom();
         }
 
         #endregion

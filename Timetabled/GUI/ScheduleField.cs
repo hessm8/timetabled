@@ -94,11 +94,7 @@ namespace Timetabled.GUI {
                         // Based on input
                         Text = Category.Find(t => t.ToLower()
                         .Contains(Text.ToLower())) ?? Text;
-                    } else if (Category.Count > 0) {
-                        // On random
-                        var randomIndex = new Random().Next(Category.Count);
-                        Text = Category[randomIndex];
-                    }
+                    } else FillRandom();
                     break;
                 // Jump to the next day
                 case Keys.Tab:
@@ -123,6 +119,15 @@ namespace Timetabled.GUI {
                     Category.Add(Text);
                 } else Text = "";
             }            
+        }
+
+        public void FillRandom() {
+            if (Category.Count > 0) {                
+                var item = Category[Helper.Random(Category.Count)];
+
+                if (ItemAvailable(item)) Text = item;
+                else FillRandom();
+            }
         }
 
         private Dictionary<FieldType, string> Categories => new Dictionary<FieldType, string>() {

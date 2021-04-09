@@ -33,6 +33,7 @@ namespace Timetabled.GUI {
 
         public static string AllowedFieldCharacters => @"[^-.A-Za-zЁёА-Яа-я0-9\s]";
         public static CultureInfo Culture => CultureInfo.InstalledUICulture;
+        public static RegionInfo Region => RegionInfo.CurrentRegion;
         public static string CensorField(string text) {
             return Regex.Replace(text, AllowedFieldCharacters, "");
         }

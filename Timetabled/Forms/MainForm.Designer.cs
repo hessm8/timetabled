@@ -38,6 +38,7 @@ namespace Timetabled.Forms {
             this.AddDataSelect = new System.Windows.Forms.ListBox();
             this.testGrid = new System.Windows.Forms.DataGridView();
             this.placeholderGroup = new System.Windows.Forms.ComboBox();
+            this.заполнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testGrid)).BeginInit();
             this.SuspendLayout();
@@ -58,7 +59,8 @@ namespace Timetabled.Forms {
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewScheduleMenuItem,
             this.базаДанныхToolStripMenuItem,
-            this.HelpMenuItem});
+            this.HelpMenuItem,
+            this.заполнитьToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
@@ -160,6 +162,13 @@ namespace Timetabled.Forms {
             this.placeholderGroup.Size = new System.Drawing.Size(227, 21);
             this.placeholderGroup.TabIndex = 32;
             // 
+            // заполнитьToolStripMenuItem
+            // 
+            this.заполнитьToolStripMenuItem.Name = "заполнитьToolStripMenuItem";
+            this.заполнитьToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.заполнитьToolStripMenuItem.Text = "Заполнить";
+            this.заполнитьToolStripMenuItem.Click += new System.EventHandler(this.FillRandomData);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -206,6 +215,7 @@ namespace Timetabled.Forms {
         private System.Windows.Forms.ToolStripMenuItem базаДанныхToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem заполнитьToolStripMenuItem;
     }
 }
 

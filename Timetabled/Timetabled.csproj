@@ -130,6 +130,7 @@
     <Compile Include="GUI\ScheduleField.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\State.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
