@@ -36,8 +36,9 @@ namespace Timetabled.GUI {
 
             var calSize = Calendar.Size;
 
-            if (CultureInfo.InstalledUICulture.Name == "ru-RU") {
-                Calendar.Location = new Point(Calendar.Location.X + Calendar.Size.Width / 5, Calendar.Location.Y);
+            if (Culture.Name == "ru-RU") {
+                Calendar.Location = new Point(Calendar.Location.X + Calendar.Size.Width / 5,
+                    Calendar.Location.Y);
             }
 
             var start = Calendar.Location;
