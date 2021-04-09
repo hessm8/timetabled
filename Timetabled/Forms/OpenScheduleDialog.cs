@@ -14,6 +14,10 @@ namespace Timetabled.Forms {
     public partial class OpenScheduleDialog : Form {
         Storage storage;
         MainGui gui;
+        bool useBrowser {
+            get => shouldOpenBrowser.Checked;
+            set => shouldOpenBrowser.Checked = value;
+        }
         public OpenScheduleDialog(Storage _storage, MainGui _gui) {
             InitializeComponent();
             storage = _storage;
@@ -22,12 +26,25 @@ namespace Timetabled.Forms {
 
         private void OpenScheduleDialog_Load(object sender, EventArgs e) {
             SelectDayOfWeek.SelectedIndex = 0;
+            useBrowser = !storage.Settings.UseViewerForm;
+            shouldOpenBrowser.CheckStateChanged += CheckChange;
         }
 
         private void SendOpenRequest(object sender, EventArgs e) {
-            if (gui.OpenSchedule(SelectDayOfWeek.SelectedIndex)) {
+            if (gui.OpenSchedule(SelectDayOfWeek.SelectedIndex, useBrowser)) {
                 Close();
             }
+        }
+
+        private void CheckChange(object sender, EventArgs e) {
+            if (!useBrowser) {
+                MessageBox.Show("Данная опция может не поддерживаться на устройстве.\n" +
+                    "При возникновении проблем используйте другую опцию.", "Предупреждение");
+            }
+        }
+
+        private void OpenScheduleDialog_FormClosed(object sender, FormClosedEventArgs e) {
+            storage.Settings.UseViewerForm = !useBrowser;
         }
     }
 }

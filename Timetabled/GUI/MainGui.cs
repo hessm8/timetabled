@@ -10,6 +10,7 @@ using Timetabled.Helpers;
 using Timetabled.Data;
 using System.IO;
 using Timetabled.Forms;
+using System.ComponentModel;
 
 namespace Timetabled.GUI {
     public class MainGui : GuiManager {
@@ -36,15 +37,21 @@ namespace Timetabled.GUI {
             Dates = new State<DateTime>(() => Calendar.SelectionStart);
             Groups = new State<string>(() => GroupField.Text);
 
+            var calSize = Calendar.Size;
+
+            if (CultureInfo.InstalledUICulture.Name == "ru-RU") {
+                Calendar.Location = new Point(Calendar.Location.X + Calendar.Size.Width / 5, Calendar.Location.Y);
+            }
+
             var start = Calendar.Location;
-            var arrowSize = new Size(21, 25);
+            var arrowSize = new Size(21, 30);
             Controls.Add(leftArrow = new Button() {
                 Location = start,
                 Size = arrowSize,                
                 Text = "◀"                
             });
             Controls.Add(rightArrow = new Button() {
-                Location = new Point(start.X + 205, start.Y),
+                Location = new Point(start.X + calSize.Width - arrowSize.Width, start.Y),
                 Size = arrowSize,
                 Text = "▶"
             });
@@ -239,7 +246,7 @@ namespace Timetabled.GUI {
                 }
             }
         }
-        public bool OpenSchedule(int dayOfweek) {
+        public bool OpenSchedule(int dayOfweek, bool inBrowser) {
             UnloadSchedule(Dates.Latest, Groups.Latest);
             var selectedDate = Dates.Latest.AddDays(dayOfweek);
             var serializedString = Storage.SerializeOnDate(selectedDate);
@@ -261,7 +268,7 @@ namespace Timetabled.GUI {
             var fileURL = new Uri(fullPath).AbsoluteUri;
 
             var link = fileURL + args;
-            if (ScheduleViewer.WebViewIsInstalled()) {
+            if (!inBrowser) {
                 var viewer = new ScheduleViewer(link);
             } else Process.Start(Storage.Settings.DefaultBrowser, link);
 

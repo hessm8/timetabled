@@ -30,6 +30,8 @@ namespace Timetabled.Forms {
             EditDataMenuItem.Click += OpenDatabase;
             AcceptChangesButton.Click += AcceptChangesButton_Click;
             CancelChangesButton.Click += CancelChangesButton_Click;
+
+
         }
 
         private void Form_OnLoad(object sender, EventArgs e) {
