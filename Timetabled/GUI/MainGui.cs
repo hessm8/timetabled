@@ -27,11 +27,8 @@ namespace Timetabled.GUI {
             };
             placeholderGroup.Dispose();
 
-            if (Storage.Data["Группа"].Count > 0) {
-                GroupField.Text = Storage.Data["Группа"][0];
-            }
             Controls.Add(GroupField);
-
+            //SelectFirstGroup();
             SelectLatestDate();
 
             Dates = new State<DateTime>(() => Calendar.SelectionStart);
@@ -68,6 +65,12 @@ namespace Timetabled.GUI {
             //Calendar.MouseDown += Calendar_MouseDown;
         }
 
+        public void SelectFirstGroup() {
+            if (Storage.Data.groups.Count > 0) {
+                GroupField.Text = Storage.Data.groups[0];
+            }
+        }
+
         private void RightArrow_Click(object sender, EventArgs e) {
             Calendar.SelectionStart = Dates.Latest.AddDays(7);
             SelectEntireWeek();
@@ -91,8 +94,8 @@ namespace Timetabled.GUI {
         //    }
         //}
 
-        public MainGui(Control.ControlCollection _control, Storage _storage)
-            : base(_control, _storage) {
+        public MainGui(Control.ControlCollection _control)
+            : base(_control) {
             AllFields = new ScheduleField[groupCount, groupCount, fieldCount];
             CreateSchedule();
         }
@@ -124,8 +127,8 @@ namespace Timetabled.GUI {
             for (int day = 0; day < groupCount; day++) {
                 int distance = 200;
 
-                var dayString = culture.DateTimeFormat.GetDayName((DayOfWeek)day + 1);
-                dayString = culture.TextInfo.ToTitleCase(dayString);
+                var dayString = Culture.DateTimeFormat.GetDayName((DayOfWeek)day + 1);
+                dayString = Culture.TextInfo.ToTitleCase(dayString);
 
                 var dayGroup = new GroupBox() {
                     Text = dayString,
@@ -228,8 +231,7 @@ namespace Timetabled.GUI {
             var classes = Storage.Schedules;
             var group = Groups.Latest;
 
-            // Clear all fields
-            foreach (var f in AllFields) f.Text = "";
+            ClearFields();
 
             for (int d = 0; d < groupCount; d++) {
                 var day = Dates.Latest.AddDays(d);
@@ -273,6 +275,25 @@ namespace Timetabled.GUI {
             } else Process.Start(Storage.Settings.DefaultBrowser, link);
 
             return true;
+        }
+
+
+
+        public void ClearSchedule() {           
+            Storage.Schedules.Clear();
+            for (int i = 0; i < 4; i++) {
+                Storage.Data[i].Clear();
+            }
+            ClearFields();
+            GroupField.Text = "";
+        }
+
+        private void ClearFields() {
+            foreach (var f in AllFields) f.Text = "";
+        }
+
+        public void FieldsEnable(bool state) {
+            foreach (var f in AllFields) f.Enabled = state;
         }
 
         #endregion

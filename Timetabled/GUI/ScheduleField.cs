@@ -7,13 +7,14 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Timetabled.Helpers;
 using Timetabled.Data;
+using Timetabled.Forms;
 
 namespace Timetabled.GUI {
     public class ScheduleField : ComboBox {
         // Gui access
-        private MainGui GuiManager { get; }
-        private Storage Storage => GuiManager.Storage;
-        private ControlCollection ParentControls => GuiManager.Controls;
+        private MainGui Gui { get; }
+        private Storage Storage => Gui.Storage;
+        private ControlCollection ParentControls => Gui.Controls;
 
         // Extension data
         public FieldType Type { get; }
@@ -22,7 +23,7 @@ namespace Timetabled.GUI {
         public (int day, int lesson) Position { get; }
 
         public ScheduleField(MainGui _guiManager, FieldType _type, (int day, int lesson) _pos) {
-            GuiManager = _guiManager;
+            Gui = _guiManager;
             Type = _type;
             Position = _pos;
 
@@ -32,7 +33,7 @@ namespace Timetabled.GUI {
             SubscribeActions();
         }
         public ScheduleField(MainGui _guiManager) {
-            GuiManager = _guiManager;
+            Gui = _guiManager;
             Type = FieldType.Group;
 
             CategoryName = Categories[Type];
@@ -41,7 +42,7 @@ namespace Timetabled.GUI {
             SubscribeActions();
         }
 
-        private DateTime Date => GuiManager.Calendar.SelectionStart.AddDays(Position.day);    
+        private DateTime Date => Gui.Calendar.SelectionStart.AddDays(Position.day);    
 
         /// <summary>
         /// Checks if current item from dropdown list is available across groups
@@ -52,7 +53,7 @@ namespace Timetabled.GUI {
             if (Storage.Schedules.ContainsKey(Date)) {
                 // All other groups on the current date
                 foreach (var group in Storage.Schedules[Date]) {
-                    var curGroup = GuiManager.GroupField;
+                    var curGroup = Gui.GroupField;
                     if (group.Key == curGroup.Text) continue;
                     
                     var lessons = group.Value;
@@ -102,7 +103,7 @@ namespace Timetabled.GUI {
                 // Jump to the next day
                 case Keys.Tab:
                     if (e.Control && Type != FieldType.Group) {
-                        GuiManager.AllFields[Position.day + 1, Position.lesson, 0].Focus();
+                        Gui.AllFields[Position.day + 1, Position.lesson, 0].Focus();
                     }
                     break;
             }
@@ -111,7 +112,7 @@ namespace Timetabled.GUI {
             // Skip if empty
             if (Text == "") return;
             // Leave only Russian and special characters
-            Text = Regex.Replace(Text, @"[^-.ЁёА-Яа-я0-9\s]", "");
+            Text = GuiManager.CensorField(Text);
             // Ask to add if item is not in database
             if (!Category.Contains(Text)) {
                 var popupResult = MessageBox.Show(

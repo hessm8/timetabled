@@ -47,7 +47,7 @@ namespace Timetabled.Forms {
             // 
             // SendDate
             // 
-            this.SendDate.Location = new System.Drawing.Point(12, 127);
+            this.SendDate.Location = new System.Drawing.Point(12, 111);
             this.SendDate.Name = "SendDate";
             this.SendDate.Size = new System.Drawing.Size(160, 32);
             this.SendDate.TabIndex = 1;
@@ -69,7 +69,7 @@ namespace Timetabled.Forms {
             this.shouldOpenBrowser.AutoSize = true;
             this.shouldOpenBrowser.Checked = true;
             this.shouldOpenBrowser.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.shouldOpenBrowser.Location = new System.Drawing.Point(12, 104);
+            this.shouldOpenBrowser.Location = new System.Drawing.Point(12, 149);
             this.shouldOpenBrowser.Name = "shouldOpenBrowser";
             this.shouldOpenBrowser.Size = new System.Drawing.Size(129, 17);
             this.shouldOpenBrowser.TabIndex = 3;
@@ -81,7 +81,7 @@ namespace Timetabled.Forms {
             this.AcceptButton = this.SendDate;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(184, 186);
+            this.ClientSize = new System.Drawing.Size(184, 185);
             this.Controls.Add(this.shouldOpenBrowser);
             this.Controls.Add(this.LabelSelect);
             this.Controls.Add(this.SendDate);

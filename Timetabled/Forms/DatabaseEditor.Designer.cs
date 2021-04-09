@@ -88,6 +88,8 @@ namespace Timetabled.Forms {
             this.Controls.Add(this.AddDataSelect);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
+            this.MaximumSize = new System.Drawing.Size(266, 505);
+            this.MinimumSize = new System.Drawing.Size(266, 505);
             this.Name = "DatabaseEditor";
             this.Opacity = 0.95D;
             this.Text = "Data Editor";

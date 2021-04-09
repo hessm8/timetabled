@@ -11,8 +11,8 @@ using Timetabled.Data;
 
 namespace Timetabled.GUI {
     public class DatabaseGui : GuiManager {
-        public DatabaseGui(Control.ControlCollection _control, Storage _storage)
-            : base(_control, _storage) { }
+        public DatabaseGui(Control.ControlCollection _control)
+            : base(_control) { }
         public override void Initialize() {
             var testGrid = Access<DataGridView>("testGrid");
             bool test = testGrid != null;
@@ -43,6 +43,13 @@ namespace Timetabled.GUI {
             LoadNewCategory();
 
             SelectList.SelectedIndexChanged += OnIndexChange;
+
+            DataGrid.CellEndEdit += DataGrid_CellEndEdit;
+        }
+
+        private void DataGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
+            var cell = DataGrid[0, e.RowIndex];
+            cell.Value = CensorField(cell.Value.ToString());
         }
 
         private void OnIndexChange(object sender, EventArgs e) {

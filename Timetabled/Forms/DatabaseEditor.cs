@@ -24,7 +24,7 @@ namespace Timetabled.Forms {
         }
 
         private void DatabaseManager_Load(object sender, EventArgs e) {
-            gui = new DatabaseGui(Controls, storage);
+            gui = new DatabaseGui(Controls);
         }
 
         private void AddDataSelect_SelectedIndexChanged(object sender, EventArgs e) {

@@ -17,42 +17,70 @@ using System.IO;
 
 namespace Timetabled.Forms {
     public partial class MainForm : Form {
-        Storage storage;
+        public static Storage Storage { get; } = new Storage();
         MainGui mainGui;
         DatabaseGui dbGui;
         public MainForm() {
             InitializeComponent();
-            storage = new Storage();
 
             Size = MaximumSize;
 
             ViewScheduleMenuItem.Click += ViewSchedule;
-            EditDataMenuItem.Click += OpenDatabase;
-            AcceptChangesButton.Click += AcceptChangesButton_Click;
-            CancelChangesButton.Click += CancelChangesButton_Click;
+            editToolStripMenuItem.Click += OpenDatabase;
+            clearToolStripMenuItem.Click += ClearDatabase;
+            clearToolStripMenuItem.Click += GroupsCheck;
+            AcceptChangesButton.Click += AcceptChanges;
+            AcceptChangesButton.Click += GroupsCheck;
+            CancelChangesButton.Click += LoadFromStorage;
+        }
 
-
+        private void ClearDatabase(object sender, EventArgs e) {
+            var res = MessageBox.Show("Вы действительно хотите очистить данные?",
+                "Предупреждение",
+                MessageBoxButtons.YesNo);
+            if (res == DialogResult.Yes) {
+                mainGui.ClearSchedule();
+                LoadFromStorage(sender, e);
+            }
         }
 
         private void Form_OnLoad(object sender, EventArgs e) {
-            storage.Load();
-            mainGui = new MainGui(Controls, storage);
-            dbGui = new DatabaseGui(Controls, storage);
+            //Size = new Size(509, 569);
+
+            Storage.Load();
+            mainGui = new MainGui(Controls);
+            dbGui = new DatabaseGui(Controls);
+
+            if (Storage.Data.groups.Count == 0) {
+                var add = new AddGroupForm();
+                add.ShowDialog();
+            }
+            SelectFirstGroup(sender, e);
+            LoadFromStorage(sender, e);
+        }
+
+        private void GroupsCheck(object sender, EventArgs e) {
+            var groupsEmpty = Storage.Data.groups.Count == 0;
+            mainGui.FieldsEnable(!groupsEmpty);
+        }
+
+        private void SelectFirstGroup(object sender, EventArgs e) {
+            mainGui.SelectFirstGroup();
         }
 
         private void Form_OnClosed(object sender, FormClosedEventArgs e) {
             if (mainGui.Groups.Latest != "") mainGui.UnloadSchedule(mainGui.Dates.Latest, mainGui.Groups.Latest);
-            storage.Unload();
+            Storage.Unload();
         }
 
         private void ViewSchedule(object sender, EventArgs e) {
-            var openForm = new OpenScheduleDialog(storage, mainGui);
+            var openForm = new OpenScheduleDialog(Storage, mainGui);
             openForm.ShowDialog();
             
         }
 
         private void OpenDatabase(object sender, EventArgs e) {
-            var dbManager = new DatabaseEditor(storage);
+            var dbManager = new DatabaseEditor(Storage);
             dbManager.Show();
         }
 
@@ -60,12 +88,12 @@ namespace Timetabled.Forms {
             new AboutBox().Show();
         }
 
-        private void AcceptChangesButton_Click(object sender, EventArgs e) {
+        private void AcceptChanges(object sender, EventArgs e) {
             dbGui.UnloadCategory(dbGui.Selected.Latest);
             dbGui.UnloadToStorage();
         }
 
-        private void CancelChangesButton_Click(object sender, EventArgs e) {
+        private void LoadFromStorage(object sender, EventArgs e) {
             dbGui.LoadFromStorage();
             dbGui.LoadNewCategory();
         }
