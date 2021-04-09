@@ -49,23 +49,33 @@ namespace Timetabled.GUI {
         /// </summary>
         /// <param name="item">Item from dropdown list of this ScheduleField</param>
         /// <returns>True if other groups don't have this item chosen</returns>
-        private bool ItemAvailable(string item) {
+        private bool ItemAvailable(string item, out bool taken) {           
+            bool result = true;
+            int count = 0;
             if (Storage.Schedules.ContainsKey(Date)) {
+                var groupSchedules = Storage.Schedules[Date];
+
+                var curGroup = Gui.GroupField.Text;
+
                 // All other groups on the current date
                 foreach (var group in Storage.Schedules[Date]) {
-                    var curGroup = Gui.GroupField;
-                    if (group.Key == curGroup.Text) continue;
-                    
+                    if (group.Key == curGroup) continue;
+
                     var lessons = group.Value;
                     // If current group has a lesson on the date
                     if (Position.lesson < lessons.Length) {
                         var lesson = lessons[Position.lesson];
                         var otherGroupItem = lesson[(int)Type];
-                        if (otherGroupItem == item) return false;
+                        if (otherGroupItem == item) {
+                            count++;
+                            result = false;
+                        }
                     }
+
                 }
             }
-            return true;
+            taken = count == Category.Count;
+            return result;
         }
 
         public void SubscribeActions() {
@@ -82,7 +92,7 @@ namespace Timetabled.GUI {
             Items.Clear();
             if (Type == FieldType.Teacher || Type == FieldType.Room) {
                 foreach (var item in Category) {
-                    if (ItemAvailable(item)) Items.Add(item);
+                    if (ItemAvailable(item, out _)) Items.Add(item);
                 }
             } else Items.AddRange(Category.ToArray());
         }
@@ -124,8 +134,9 @@ namespace Timetabled.GUI {
         public void FillRandom() {
             if (Category.Count > 0) {                
                 var item = Category[Helper.Random(Category.Count)];
-
-                if (ItemAvailable(item)) Text = item;
+                bool av = ItemAvailable(item, out bool taken);
+                if (av) Text = item;
+                else if (taken) Text = "";
                 else FillRandom();
             }
         }

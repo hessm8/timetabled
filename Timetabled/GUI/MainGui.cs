@@ -35,8 +35,8 @@ namespace Timetabled.GUI {
             Groups = new State<string>(() => GroupField.Text);
 
             var calSize = Calendar.Size;
-            
-            if (Region.Name == "ru-RU") {
+
+            if (Region.DisplayName == "ru-RU") {
                 Calendar.Location = new Point(Calendar.Location.X + Calendar.Size.Width / 5,
                     Calendar.Location.Y);
             }
