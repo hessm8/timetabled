@@ -32,13 +32,13 @@ namespace Timetabled.Forms {
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.заполнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TestLoc = new System.Windows.Forms.Button();
             this.CancelChangesButton = new System.Windows.Forms.Button();
             this.AcceptChangesButton = new System.Windows.Forms.Button();
             this.AddDataSelect = new System.Windows.Forms.ListBox();
             this.testGrid = new System.Windows.Forms.DataGridView();
             this.placeholderGroup = new System.Windows.Forms.ComboBox();
-            this.заполнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.testGrid)).BeginInit();
             this.SuspendLayout();
@@ -59,8 +59,8 @@ namespace Timetabled.Forms {
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewScheduleMenuItem,
             this.базаДанныхToolStripMenuItem,
-            this.HelpMenuItem,
-            this.заполнитьToolStripMenuItem});
+            this.заполнитьToolStripMenuItem,
+            this.HelpMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
@@ -86,13 +86,13 @@ namespace Timetabled.Forms {
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.editToolStripMenuItem.Text = "Настроить";
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearToolStripMenuItem.Text = "Очистить";
             // 
             // HelpMenuItem
@@ -101,6 +101,17 @@ namespace Timetabled.Forms {
             this.HelpMenuItem.Size = new System.Drawing.Size(65, 20);
             this.HelpMenuItem.Text = "Справка";
             this.HelpMenuItem.Click += new System.EventHandler(this.HelpMenuItem_Click);
+            // 
+            // заполнитьToolStripMenuItem
+            // 
+            this.заполнитьToolStripMenuItem.Name = "заполнитьToolStripMenuItem";
+            this.заполнитьToolStripMenuItem.Size = new System.Drawing.Size(148, 20);
+            this.заполнитьToolStripMenuItem.Text = "Случайное расписание";
+            this.заполнитьToolStripMenuItem.ToolTipText = "Составляет расписание с случайными данными. Если поля пусты, то они были заняты д" +
+    "ругими группами";
+            this.заполнитьToolStripMenuItem.Click += new System.EventHandler(this.FillRandomData);
+            this.заполнитьToolStripMenuItem.DoubleClick += new System.EventHandler(this.заполнитьToolStripMenuItem_DoubleClick);
+            this.заполнитьToolStripMenuItem.MouseHover += new System.EventHandler(this.заполнитьToolStripMenuItem_MouseHover);
             // 
             // TestLoc
             // 
@@ -161,13 +172,6 @@ namespace Timetabled.Forms {
             this.placeholderGroup.Name = "placeholderGroup";
             this.placeholderGroup.Size = new System.Drawing.Size(227, 21);
             this.placeholderGroup.TabIndex = 32;
-            // 
-            // заполнитьToolStripMenuItem
-            // 
-            this.заполнитьToolStripMenuItem.Name = "заполнитьToolStripMenuItem";
-            this.заполнитьToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
-            this.заполнитьToolStripMenuItem.Text = "Заполнить";
-            this.заполнитьToolStripMenuItem.Click += new System.EventHandler(this.FillRandomData);
             // 
             // MainForm
             // 

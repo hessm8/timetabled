@@ -135,9 +135,7 @@ namespace Timetabled.GUI {
             if (Category.Count > 0) {                
                 var item = Category[Helper.Random(Category.Count)];
                 bool av = ItemAvailable(item, out bool taken);
-                if (av) Text = item;
-                else if (taken) Text = "";
-                else FillRandom();
+                if (av || Type == FieldType.Subject) Text = item;
             }
         }
 

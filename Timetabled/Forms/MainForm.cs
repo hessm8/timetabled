@@ -101,5 +101,13 @@ namespace Timetabled.Forms {
         private void FillRandomData(object sender, EventArgs e) {
             mainGui.FieldsAllRandom();
         }
+
+        private void заполнитьToolStripMenuItem_MouseHover(object sender, EventArgs e) {
+
+        }
+
+        private void заполнитьToolStripMenuItem_DoubleClick(object sender, EventArgs e) {
+
+        }
     }
 }

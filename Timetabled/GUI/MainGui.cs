@@ -311,8 +311,25 @@ namespace Timetabled.GUI {
             foreach (var f in AllFields) f.Enabled = state;
         }
 
+        int randomFailCount = 0;
         public void FieldsAllRandom() {
-            foreach (var f in AllFields) f.FillRandom();
+            for (int i = 0; i < 10; i++) {
+                foreach (var f in AllFields) f.FillRandom();
+
+                bool allFilled = true;
+                foreach (var f in AllFields) {
+                    if (f.Text == "") {
+                        allFilled = false;
+                        break;
+                    }
+                }
+                if (allFilled) return;
+            }
+
+            if (++randomFailCount == 2) {
+                MessageBox.Show("Если поля пусты, то вероятно они уже заняты другими группами", "Примечание");
+                randomFailCount = 0;
+            }
         }
 
         #endregion
