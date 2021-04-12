@@ -32,7 +32,7 @@ namespace Timetabled.Forms {
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.заполнитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FiilRandomMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TestLoc = new System.Windows.Forms.Button();
             this.CancelChangesButton = new System.Windows.Forms.Button();
             this.AcceptChangesButton = new System.Windows.Forms.Button();
@@ -59,7 +59,7 @@ namespace Timetabled.Forms {
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewScheduleMenuItem,
             this.базаДанныхToolStripMenuItem,
-            this.заполнитьToolStripMenuItem,
+            this.FiilRandomMenuItem,
             this.HelpMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -104,14 +104,10 @@ namespace Timetabled.Forms {
             // 
             // заполнитьToolStripMenuItem
             // 
-            this.заполнитьToolStripMenuItem.Name = "заполнитьToolStripMenuItem";
-            this.заполнитьToolStripMenuItem.Size = new System.Drawing.Size(148, 20);
-            this.заполнитьToolStripMenuItem.Text = "Случайное расписание";
-            this.заполнитьToolStripMenuItem.ToolTipText = "Составляет расписание с случайными данными. Если поля пусты, то они были заняты д" +
-    "ругими группами";
-            this.заполнитьToolStripMenuItem.Click += new System.EventHandler(this.FillRandomData);
-            this.заполнитьToolStripMenuItem.DoubleClick += new System.EventHandler(this.заполнитьToolStripMenuItem_DoubleClick);
-            this.заполнитьToolStripMenuItem.MouseHover += new System.EventHandler(this.заполнитьToolStripMenuItem_MouseHover);
+            this.FiilRandomMenuItem.Name = "FiilRandomMenuItem";
+            this.FiilRandomMenuItem.Size = new System.Drawing.Size(148, 20);
+            this.FiilRandomMenuItem.Text = "Случайное расписание";
+            this.FiilRandomMenuItem.Click += new System.EventHandler(this.FillRandomData);
             // 
             // TestLoc
             // 
@@ -219,7 +215,7 @@ namespace Timetabled.Forms {
         private System.Windows.Forms.ToolStripMenuItem базаДанныхToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem заполнитьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem FiilRandomMenuItem;
     }
 }
 

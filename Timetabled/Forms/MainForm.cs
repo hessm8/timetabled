@@ -45,8 +45,6 @@ namespace Timetabled.Forms {
         }
 
         private void Form_OnLoad(object sender, EventArgs e) {
-            //Size = new Size(509, 569);
-
             Storage.Load();
             mainGui = new MainGui(Controls);
             dbGui = new DatabaseGui(Controls);
@@ -62,6 +60,7 @@ namespace Timetabled.Forms {
         private void GroupsCheck(object sender, EventArgs e) {
             var groupsEmpty = Storage.Data.groups.Count == 0;
             mainGui.FieldsEnable(!groupsEmpty);
+            if (!groupsEmpty && mainGui.GroupField.Text == "") SelectFirstGroup(sender, e);
         }
 
         private void SelectFirstGroup(object sender, EventArgs e) {
@@ -100,14 +99,6 @@ namespace Timetabled.Forms {
 
         private void FillRandomData(object sender, EventArgs e) {
             mainGui.FieldsAllRandom();
-        }
-
-        private void заполнитьToolStripMenuItem_MouseHover(object sender, EventArgs e) {
-
-        }
-
-        private void заполнитьToolStripMenuItem_DoubleClick(object sender, EventArgs e) {
-
         }
     }
 }
